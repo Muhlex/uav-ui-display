@@ -1,0 +1,5 @@
+line-length = 100
+
+[format]
+indent-style = "tab"
+docstring-code-format = true
