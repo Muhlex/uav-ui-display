@@ -1,12 +1,10 @@
 from data import Data
 
-from .matrix import Matrix
-# from .radar import Radar
+from .output import Output
+from .debug import Debug
 
 
 class Renderer:
-	matrix = Matrix(480, 96, 4)
-	# radar = Radar(256, 256)
-
 	def __init__(self, data: Data):
-		self.data = data
+		self.debug = Debug(data)
+		self.output = Output(data, 480, 96, 4)
