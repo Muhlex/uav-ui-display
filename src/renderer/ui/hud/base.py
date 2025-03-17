@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
+
 import pyglet as pg
 
+
 class HudBase(ABC):
+	@property
 	@abstractmethod
-	def activate(self, tex: pg.image.Texture):
+	def texture(self) -> pg.image.Texture:
 		pass
 
 	@abstractmethod
-	def draw(self, tex: pg.image.Texture):
+	def render(self):
 		pass

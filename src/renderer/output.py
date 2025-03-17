@@ -1,80 +1,74 @@
 from math import pi
 
 import pyglet as pg
-from pyglet import gl
+import pyglet.gl as gl
+from pgext import ColorFramebuffer
 
-from data import Data
-from .hud import Hud
+from .ui.base import UIBase
+from .ui.hud import HUD
 
 
 class Output:
-	def __init__(self, data: Data, w: int, h: int, scale: int):
-		self.data = data
+	def __init__(self, w: int, h: int, scale: int):
 		self.w = w
 		self.h = h
 		self.scale = scale
 
-		self.overdraw_horz = w // 2
-		self.overdraw_w = w + self.overdraw_horz * 2
-
-		self.overdraw_tex = pg.image.Texture.create(
-			self.overdraw_w, h, min_filter=gl.GL_NEAREST, mag_filter=gl.GL_NEAREST
-		)
-		self.overdraw_buf = pg.image.Framebuffer()  # type: ignore
-		self.overdraw_buf.attach_texture(self.overdraw_tex, attachment=gl.GL_COLOR_ATTACHMENT0)
-
-		self.tex = pg.image.Texture.create(w, h, min_filter=gl.GL_NEAREST, mag_filter=gl.GL_NEAREST)
-		self.buf = pg.image.Framebuffer()  # type: ignore
-		self.buf.attach_texture(self.tex, attachment=gl.GL_COLOR_ATTACHMENT0)
-
 		self.win = pg.window.Window(width=w * scale, height=h * scale, caption=type(self).__name__)
 		self.win.push_handlers(self.on_draw)
 
+		self.overdraw_horz = w // 2
+		self.overdraw_w = w + self.overdraw_horz * 2
+
+		self.overdraw_buf = ColorFramebuffer(self.overdraw_w, h)
+		self.buf = ColorFramebuffer(w, h)
+
 		self.fps = pg.window.FPSDisplay(window=self.win)
 
-		self.hud = Hud(self.w // 3, self.h)
+		self.uis: list[UIBase] = [HUD(self.w, self.h)]
 
-	def yawToX(self, yaw: float):
+	def yaw_to_x(self, yaw: float):
 		return self.overdraw_horz + self.w // 2 + yaw / (2 * pi) * self.w
 
-	def draw(self):
-		self.hud.draw()
+	def pitch_to_y(self, pitch: float):
+		return self.h // 2  # TODO
 
+	def draw_uis(self):
 		self.overdraw_buf.bind()
 		gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-		x = -self.hud.tex.width // 2
-		if self.data.has_operator:
-			x += int(self.yawToX(self.data.operator_yaw))
-		else:
-			x += int(self.yawToX(self.data.scroll_yaw))
-		self.hud.tex.blit(x, 0)
-		if not self.data.has_operator:
-			self.hud.tex.blit(x + self.hud.tex.width, 0)
-			self.hud.tex.blit(x - self.hud.tex.width, 0)
 		self.overdraw_buf.unbind()
 
-	def wrap(self):
+		for ui in self.uis:
+			ui.render()
+			tex = ui.texture
+			x = int(self.yaw_to_x(ui.yaw)) - tex.width // 2
+			y = self.h // 2 if ui.pitch is None else int(self.pitch_to_y(ui.pitch))
+			y_frac = y / self.h
+			y -= int(tex.height * y_frac)
+
+			self.overdraw_buf.bind()
+			tex.blit(x, y)
+			self.overdraw_buf.unbind()
+
+	def draw_wrap(self):
 		self.buf.bind()
-		self.overdraw_tex.blit(-self.overdraw_horz, 0)
+		self.overdraw_buf.texture.blit(-self.overdraw_horz, 0)
 
 		gl.glEnable(gl.GL_BLEND)
 		gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-		# TODO: This should be possible without getting the image data again,
-		# but pyglet doesn't implement it currently (potentially do it manually).
-		regionLeft = self.overdraw_tex.get_region(0, 0, self.overdraw_horz, self.h).get_image_data()
+		regionLeft = self.overdraw_buf.texture.get_region(0, 0, self.overdraw_horz, self.h)
 		regionLeft.blit(self.w - self.overdraw_horz, 0)
-		regionRight = self.overdraw_tex.get_region(
+		regionRight = self.overdraw_buf.texture.get_region(
 			self.overdraw_w - self.overdraw_horz, 0, self.overdraw_horz, self.h
-		).get_image_data()
+		)
 		regionRight.blit(0, 0)
 		gl.glDisable(gl.GL_BLEND)
 
 		self.buf.unbind()
 
 	def on_draw(self):
-		self.draw()
-		self.wrap()
+		self.draw_uis()
+		self.draw_wrap()
 
-		self.win.clear()
-		self.tex.blit(0, 0, width=self.win.width, height=self.win.height)
+		self.buf.texture.blit(0, 0, width=self.win.width, height=self.win.height)
 		self.fps.draw()

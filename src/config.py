@@ -1,4 +1,8 @@
 import pyglet as pg
+import pyglet.gl as gl
+
+pg.image.Texture.default_mag_filter = gl.GL_NEAREST
+pg.image.Texture.default_min_filter = gl.GL_NEAREST
 
 @pg.app.event_loop.event
 def on_window_close(window):
