@@ -28,7 +28,7 @@ class State(Observable):
 		self.subscribe("operator_origin", self._update_operator_dir_yaw)
 		self.subscribe("uav_origin", self._update_operator_dir_yaw)
 
-	def _update_operator_dir_yaw(self):
+	def _update_operator_dir_yaw(self, _):
 		operator_dir = (self.operator_origin - self.uav_origin).normalize()
 		self.operator_dir_yaw = operator_dir.get_pitch_yaw()[1]
 

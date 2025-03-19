@@ -79,9 +79,3 @@ class BatteryLarge(BatteryBase):
 			y,
 			batch=batch,
 		)
-
-a = BatteryLarge(0, 0)
-b = BatteryLarge(0, 0)
-print(a.width, b.width)
-a.width = 30
-print(a.width, b.width)
