@@ -4,12 +4,15 @@ import pyglet as pg
 import pyglet.gl as gl
 from pgext import ColorFramebuffer
 
+from ue.send import UESender
+
 from .ui.base import UIBase
 from .ui.hud import HUD
 
 
 class Output:
 	def __init__(self, w: int, h: int, scale: int):
+		self.sent_frame = False
 		self.w = w
 		self.h = h
 		self.scale = scale
@@ -22,13 +25,14 @@ class Output:
 
 		self.overdraw_buf = ColorFramebuffer(self.overdraw_w, h)
 		self.buf = ColorFramebuffer(w, h)
+		self.sender = UESender("LED Matrix")
 
 		self.fps = pg.window.FPSDisplay(window=self.win)
 
 		self.uis: list[UIBase] = [HUD(self.w, self.h)]
 
 	def yaw_to_x(self, yaw: float):
-		return self.overdraw_horz + self.w // 2 + yaw / (2 * pi) * self.w
+		return self.overdraw_horz + self.w // 2 - yaw / (2 * pi) * self.w
 
 	def pitch_to_y(self, pitch: float):
 		return self.h // 2  # TODO
@@ -72,3 +76,5 @@ class Output:
 
 		self.buf.texture.blit(0, 0, width=self.win.width, height=self.win.height)
 		self.fps.draw()
+
+		self.sender.update_texture(self.buf.texture)

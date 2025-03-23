@@ -1,12 +1,13 @@
 > TODO: Write Readme
-# NAME
+# NAME HERE
 
 ## Project Setup
-1. **Create a virtual environment:**
+1. Ensure Python 3.10 is installed (other versions may work, but are not tested).
+2. Inside the project directory, **create a virtual environment**:
 	```
 	python -m venv venv
 	```
-2. **Activate the virtual environment:**
+3. **Activate the virtual environment**:
 
 	Windows:
 	```
@@ -16,7 +17,7 @@
 	```
 	source venv/bin/activate
 	```
-3. **Install dependencies:**
+4. **Install dependencies**:
 	```
 	pip install -r requirements.txt
 	```

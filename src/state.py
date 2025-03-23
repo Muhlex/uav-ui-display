@@ -20,9 +20,10 @@ class State(Observable):
 	uav_state = UAVState.LOW_POWER
 	uav_origin = Vec3(0.0, 0.0, 0.0)
 	operator_origin = Vec3(0.0, 0.0, 0.0)
-	operator_dir_yaw = 0.0
 	target_origin = Vec3(0.0, 0.0, 0.0)
 	battery_frac = 0.25
+
+	operator_dir_yaw = 0.0
 
 	def __init__(self):
 		self.subscribe("operator_origin", self._update_operator_dir_yaw)
@@ -31,6 +32,5 @@ class State(Observable):
 	def _update_operator_dir_yaw(self, _):
 		operator_dir = (self.operator_origin - self.uav_origin).normalize()
 		self.operator_dir_yaw = operator_dir.get_pitch_yaw()[1]
-
 
 state = State()
