@@ -2,7 +2,7 @@
 # NAME HERE
 
 ## Project Setup
-1. Ensure Python 3.10 is installed (other versions may work, but are not tested).
+1. Ensure Python 3.13 is installed (other versions may work, but are not tested).
 2. Inside the project directory, **create a virtual environment**:
 	```
 	python -m venv venv
