@@ -13,9 +13,7 @@ class HudAwaitCommand(HudBase):
 		self.buf = ColorFramebuffer(w, h)
 		self.batch = pg.graphics.Batch()
 
-		self.border = pg.shapes.Box(
-			0, 0, w, h, color=(255, 255, 255, 100), batch=self.batch
-		)
+		self.border = pg.shapes.Box(0, 0, w, h, color=(255, 255, 255), batch=self.batch)
 		self.title = pg.text.Label(
 			"Ready",
 			font_name=Config.Fonts.display.name,

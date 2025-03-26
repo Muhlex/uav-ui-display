@@ -7,6 +7,7 @@ from pgext import ColorFramebuffer
 from state import state, UAVState
 
 from ..base import UIBase
+from .base import HudBase
 from .search import HUDSearch
 from .low_power import HUDLowPower
 from .await_command import HudAwaitCommand
@@ -15,16 +16,15 @@ from .await_command import HudAwaitCommand
 class HUD(UIBase):
 	def __init__(self, w: int, h: int):
 		super().__init__()
-		self.scroll_yawspeed = -0.05
+		self.y_frac = 1.0
+		self.scroll_yawspeed = 0.08
 		self.tile_count = 3
-		self.bottom_padding = 6
 
 		hud_w = w // self.tile_count
-		hud_h = h - self.bottom_padding
-		self.state_to_huds = {
-			UAVState.SEARCH: HUDSearch(hud_w, hud_h),
-			UAVState.LOW_POWER: HUDLowPower(hud_w, hud_h),
-			UAVState.AWAIT_COMMAND: HudAwaitCommand(hud_w, hud_h),
+		self.state_to_huds: dict[UAVState, HudBase] = {
+			UAVState.SEARCH: HUDSearch(hud_w, h),
+			UAVState.LOW_POWER: HUDLowPower(hud_w, h),
+			UAVState.AWAIT_COMMAND: HudAwaitCommand(hud_w, h),
 		}
 		self.buf = ColorFramebuffer(w, h)
 
@@ -36,7 +36,7 @@ class HUD(UIBase):
 
 	@property
 	def active_hud(self):
-		return self.state_to_huds[state.uav_state]
+		return self.state_to_huds.get(state.uav_state)
 
 	def tick(self, dt: float):
 		if state.has_operator:
@@ -46,6 +46,12 @@ class HUD(UIBase):
 			self.yaw = (unclamped_yaw + pi) % (2 * pi) - pi
 
 	def render(self):
+		if self.active_hud is None:
+			self.buf.bind()
+			gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+			self.buf.unbind()
+			return
+
 		self.active_hud.render()
 		tex = self.active_hud.texture
 
@@ -57,6 +63,6 @@ class HUD(UIBase):
 		w = tex.width * tile_count
 		x = self.buf.texture.width // 2 - w // 2
 		for i in range(tile_count):
-			tex.blit(x + i * tex.width, self.bottom_padding)
+			tex.blit(x + i * tex.width, 0)
 
 		self.buf.unbind()

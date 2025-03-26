@@ -14,13 +14,14 @@ class UEReceiver:
 		self.uri = websockets_uri
 		self.rcps = remote_control_presets
 
+		atexit.register(lambda: self.ws.close() if self.ws is not None else None)
+
 	def init(self):
 		def thread():
 			try:
 				ws = connect(self.uri)
-				atexit.register(ws.close)
 			except Exception as e:
-				print("Failed to connect to Unreal Engine websocket server:", e)
+				print(f"Failed to connect to Unreal Engine websocket server:\n{e}")
 				return
 
 			def get_rcp_register_message(rcp_name: str):

@@ -1,6 +1,14 @@
 from typing import NamedTuple
 
 
+def clamp(value: float, min_value: float, max_value: float):
+	return max(min_value, min(value, max_value))
+
+
+def map_range(value: float, old_min: float, old_max: float, new_min: float, new_max: float):
+	return new_min + (value - old_min) * (new_max - new_min) / (old_max - old_min)
+
+
 class Observable:
 	_data = {}
 	_subscribers = {}
