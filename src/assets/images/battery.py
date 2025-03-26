@@ -31,7 +31,7 @@ class BatteryBase:
 			batch=self.batch,
 		)
 
-		def on_battery_frac_change(frac: float):
+		def on_change_battery_frac(frac: float):
 			self.fill.width = ceil(self.fill_max_w * frac)
 			if frac < 0.3:
 				self.fill.color = (255, 50, 0, self.fill.color[3])
@@ -46,8 +46,7 @@ class BatteryBase:
 			else:
 				self.fill.color = self.fill.color[:3] + (255,)
 
-		state.subscribe("battery_frac", on_battery_frac_change)
-		on_battery_frac_change(state.battery_frac)
+		state.subscribe("battery_frac", on_change_battery_frac, immediate=True)
 		pg.clock.schedule_interval(blink, 0.5)
 
 	def draw(self):

@@ -13,9 +13,11 @@ class Observable:
 	_data = {}
 	_subscribers = {}
 
-	def subscribe(self, field: str, callback):
+	def subscribe(self, field: str, callback, immediate=False):
 		if field not in self._subscribers:
 			self._subscribers[field] = []
+		if immediate:
+			callback(getattr(self, field))
 		self._subscribers[field].append(callback)
 
 	def __setattr__(self, field: str, value):

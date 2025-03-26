@@ -3,7 +3,6 @@ from util import clamp, map_range
 
 import pyglet as pg
 import pyglet.gl as gl
-from pgext import ColorFramebuffer
 
 from ..base import UIBase
 from assets.images.eyes import Eyes
@@ -13,20 +12,14 @@ from state import state
 
 class Indicator(UIBase):
 	def __init__(self, width: int, height: int):
-		super().__init__()
+		super().__init__(width, height)
 		self.radius = height // 2
 		self.search_yawspeed = -1.5
 
 		self.batch = pg.graphics.Batch()
 		self.eyes = Eyes(width // 2, height // 2, width, batch=self.batch)
 
-		self.buf = ColorFramebuffer(width, height)
-
 		pg.clock.schedule_interval(self.tick, 1 / 60)
-
-	@property
-	def texture(self):
-		return self.buf.texture
 
 	def tick(self, dt: float):
 		def pitch_to_y_frac(pitch: float):

@@ -2,41 +2,55 @@ from math import pi
 
 import pyglet as pg
 import pyglet.gl as gl
-from pgext import ColorFramebuffer
 
 from state import state, UAVState
 
+from ...dynamic_texture import DynamicTexture
 from ..base import UIBase
-from .base import HudBase
 from .search import HUDSearch
 from .low_power import HUDLowPower
 from .await_command import HudAwaitCommand
 
 
 class HUD(UIBase):
-	def __init__(self, w: int, h: int):
-		super().__init__()
+	def __init__(self, width: int, height: int):
+		super().__init__(width, height)
 		self.y_frac = 1.0
 		self.scroll_yawspeed = 0.08
-		self.tile_count = 3
 
-		hud_w = w // self.tile_count
-		self.state_to_huds: dict[UAVState, HudBase] = {
-			UAVState.SEARCH: HUDSearch(hud_w, h),
-			UAVState.LOW_POWER: HUDLowPower(hud_w, h),
-			UAVState.AWAIT_COMMAND: HudAwaitCommand(hud_w, h),
+		gap = 16
+		tile_count = 3
+		hud_width = width // tile_count - gap
+		huds: dict[UAVState, DynamicTexture] = {
+			# UAVState.NONE: HUDNone(hud_width, height),
+			UAVState.SEARCH: HUDSearch(hud_width, height),
+			UAVState.LOW_POWER: HUDLowPower(hud_width, height),
+			UAVState.AWAIT_COMMAND: HudAwaitCommand(hud_width, height),
 		}
-		self.buf = ColorFramebuffer(w, h)
+		self.active_hud = huds[UAVState.LOW_POWER]
+
+		self.batch = pg.graphics.Batch()
+		self.sprites = [
+			pg.sprite.Sprite(self.active_hud.texture, i * (hud_width + gap), 0, batch=self.batch)
+			for i in range(tile_count)
+		]
+
+		def on_change_uav_state(uav_state: UAVState):
+			self.active_hud = huds.get(uav_state, huds[UAVState.LOW_POWER])
+			for sprite in self.sprites:
+				sprite.image = self.active_hud.texture
+
+		state.subscribe("uav_state", on_change_uav_state, immediate=True)
+
+		def on_change_has_operator(has_operator: bool):
+			for sprite in self.sprites:
+				sprite.visible = not has_operator
+			if has_operator:
+				self.sprites[len(self.sprites) // 2].visible = True
+
+		state.subscribe("has_operator", on_change_has_operator, immediate=True)
 
 		pg.clock.schedule_interval(self.tick, 1 / 60)
-
-	@property
-	def texture(self) -> pg.image.Texture:
-		return self.buf.texture
-
-	@property
-	def active_hud(self):
-		return self.state_to_huds.get(state.uav_state)
 
 	def tick(self, dt: float):
 		if state.has_operator:
@@ -53,16 +67,8 @@ class HUD(UIBase):
 			return
 
 		self.active_hud.render()
-		tex = self.active_hud.texture
 
 		self.buf.bind()
 		gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-
-		# TODO: Use sprites here for a bit of a performance improvement
-		tile_count = 1 if state.has_operator else self.tile_count
-		w = tex.width * tile_count
-		x = self.buf.texture.width // 2 - w // 2
-		for i in range(tile_count):
-			tex.blit(x + i * tex.width, 0)
-
+		self.batch.draw()
 		self.buf.unbind()

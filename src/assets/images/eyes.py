@@ -1,5 +1,6 @@
 import pyglet as pg
 
+from config import Config
 from state import state, UAVState
 
 
@@ -11,20 +12,23 @@ class Eyes:
 		self.x = x
 		self.y = y
 
-		def on_uav_state_change(uav_state: UAVState):
+		def on_change_uav_state(uav_state: UAVState):
 			match uav_state:
 				case UAVState.SEARCH:
 					radius = 4
 					count = 12
 					gap = (width - count * radius * 2) // count
-					self.update_circles(count=count, radius=radius, gap=gap)
+					self.update_circles(count=count, radius=radius, gap=gap, color=Config.Colors.search)
+				case UAVState.LOW_POWER | UAVState.CANCEL_COMMAND:
+					self.update_circles(count=2, radius=4, gap=10, color=Config.Colors.error)
+				case UAVState.APPROACH:
+					self.update_circles(count=2, radius=4, gap=10, color=Config.Colors.active)
 				case _:
-					self.update_circles(count=2, radius=4, gap=10)
+					self.update_circles(count=2, radius=4, gap=10, color=Config.Colors.idle)
 
-		state.subscribe("uav_state", on_uav_state_change)
-		on_uav_state_change(state.uav_state)
+		state.subscribe("uav_state", on_change_uav_state, immediate=True)
 
-	def update_circles(self, count: int, radius: int, gap: float):
+	def update_circles(self, count: int, radius: int, gap: float, color: tuple[int, int, int]):
 		for circle in self.circles:
 			circle.delete()
 
@@ -36,7 +40,7 @@ class Eyes:
 				x + radius + i * (radius * 2 + gap),
 				self.y,
 				radius,
-				color=(0, 50, 255, 255),
+				color=color,
 				batch=self.batch,
 			)
 			for i in range(count)

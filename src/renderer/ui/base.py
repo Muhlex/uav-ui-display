@@ -1,18 +1,8 @@
-from abc import ABC, abstractmethod
-
-import pyglet as pg
+from ..dynamic_texture import DynamicTexture
 
 
-class UIBase(ABC): # TODO: Inherit from DynamicTexture?
-	def __init__(self):
+class UIBase(DynamicTexture):
+	def __init__(self, width: int, height: int):
+		super().__init__(width, height)
 		self.yaw = 0.0
 		self.y_frac = 0.5
-
-	@property
-	@abstractmethod
-	def texture(self) -> pg.image.Texture:
-		pass
-
-	@abstractmethod
-	def render(self):
-		pass

@@ -1,13 +1,12 @@
 import pyglet as pg
-from pgext import ColorFramebuffer
 
 from config import Config
-from .base import HudBase
+from ...dynamic_texture import DynamicTexture
 
 
-class HUDSearch(HudBase):
-	def __init__(self, w: int, h: int):
-		self.buf = ColorFramebuffer(w, h)
+class HUDSearch(DynamicTexture):
+	def __init__(self, width: int, height: int):
+		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
 		drawables = []
 
@@ -17,8 +16,8 @@ class HUDSearch(HudBase):
 				font_name=Config.Fonts.display.name,
 				font_size=Config.Fonts.display_size * 2,
 				color=(155, 175, 255, 255),
-				x=w // 2,
-				y=h // 2,
+				x=width // 2,
+				y=height // 2,
 				anchor_x="center",
 				anchor_y="center",
 				batch=self.batch,
@@ -27,10 +26,6 @@ class HUDSearch(HudBase):
 		self.buf.bind()
 		self.batch.draw()
 		self.buf.unbind()
-
-	@property
-	def texture(self):
-		return self.buf.texture
 
 	def render(self):
 		pass

@@ -13,3 +13,8 @@ class Config:
 		debug = pg.font.load("JetBrains Mono")
 		display = pg.font.load("Nihonium113")
 		display_size = 12
+	class Colors:
+		idle = (50, 255, 50)
+		search = (25, 75, 255)
+		active = (255, 135, 0)
+		error = (255, 80, 80)
