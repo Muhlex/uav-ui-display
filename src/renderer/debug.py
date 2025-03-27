@@ -39,7 +39,7 @@ class Debug:
 		)
 
 		self.update(0.0)
-		pg.clock.schedule_interval(self.update, 1 / 60)
+		pg.clock.schedule_interval(self.update, 1 / 30)
 
 	def draw(self):
 		self.batch.draw()

@@ -16,9 +16,9 @@ class UAVState(Enum):
 
 
 class State(Observable):
-	has_operator = False
+	has_operator = True
 	has_target = False
-	uav_state = UAVState.LOW_POWER
+	uav_state = UAVState.AWAIT_COMMAND
 	uav_origin = Vec3(0.0, 0.0, 0.0)
 	operator_origin = Vec3(0.0, 0.0, 0.0)
 	target_origin = Vec3(0.0, 0.0, 0.0)

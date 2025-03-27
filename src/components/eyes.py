@@ -20,7 +20,7 @@ class Eyes:
 					gap = (width - count * radius * 2) // count
 					self.update_circles(count=count, radius=radius, gap=gap, color=Config.Colors.search)
 				case UAVState.LOW_POWER | UAVState.CANCEL_COMMAND:
-					self.update_circles(count=2, radius=4, gap=10, color=Config.Colors.error)
+					self.update_circles(count=2, radius=4, gap=10, color=Config.Colors.abort)
 				case UAVState.APPROACH:
 					self.update_circles(count=2, radius=4, gap=10, color=Config.Colors.active)
 				case _:

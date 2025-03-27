@@ -5,7 +5,7 @@ import pyglet as pg
 import pyglet.gl as gl
 
 from ..base import UIBase
-from assets.images.eyes import Eyes
+from components.eyes import Eyes
 
 from state import state
 
@@ -19,7 +19,7 @@ class Indicator(UIBase):
 		self.batch = pg.graphics.Batch()
 		self.eyes = Eyes(width // 2, height // 2, width, batch=self.batch)
 
-		pg.clock.schedule_interval(self.tick, 1 / 60)
+		pg.clock.schedule_interval(self.tick, 1 / 120)
 
 	def tick(self, dt: float):
 		def pitch_to_y_frac(pitch: float):

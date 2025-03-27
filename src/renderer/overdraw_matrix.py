@@ -5,7 +5,7 @@ import pyglet.gl as gl
 from .dynamic_texture import DynamicTexture
 from .ui.base import UIBase
 from .ui.hud import HUD
-from .ui.indicator import Indicator
+# from .ui.indicator import Indicator
 
 
 class OverdrawMatrix(DynamicTexture):
@@ -14,7 +14,10 @@ class OverdrawMatrix(DynamicTexture):
 		self.matrix_width = matrix_width
 		self.overdraw_horz = overdraw_horz
 
-		self.uis: list[UIBase] = [HUD(matrix_width, matrix_height - 8), Indicator(matrix_width, 8)]
+		self.uis: list[UIBase] = [
+			HUD(matrix_width, matrix_height - 8),
+			# Indicator(matrix_width, 8),
+		]
 
 	def yaw_to_x(self, yaw: float):
 		return self.overdraw_horz + self.matrix_width // 2 - yaw / (2 * pi) * self.matrix_width

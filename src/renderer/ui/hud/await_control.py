@@ -6,25 +6,28 @@ from ...dynamic_texture import DynamicTexture
 
 from components.battery import BatterySmall
 
+from assets.images.person.wave import wave as icon_wave
+
 icon_point = pg.resource.image("assets/images/person/point.png")
 icon_cancel = pg.resource.image("assets/images/person/cancel.png")
 
-class HUDAwaitCommand(DynamicTexture):
+
+class HUDAwaitControl(DynamicTexture):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
 
-		# self.title = pg.text.Label(
-		# 	"Available actions:",
-		# 	font_name=Config.Fonts.display.name,
-		# 	font_size=Config.Fonts.display_size,
-		# 	color=Config.Colors.idle,
-		# 	x=width // 2,
-		# 	y=height - 2,
-		# 	anchor_x="center",
-		# 	anchor_y="top",
-		# 	batch=self.batch,
-		# )
+		self.title = pg.text.Label(
+			"Ready for command:",
+			font_name=Config.Fonts.display.name,
+			font_size=Config.Fonts.display_size,
+			color=Config.Colors.idle,
+			x=width // 2,
+			y=height - 2,
+			anchor_x="center",
+			anchor_y="top",
+			batch=self.batch,
+		)
 
 		self.point_label = pg.text.Label(
 			"Point to deliver",
@@ -32,7 +35,7 @@ class HUDAwaitCommand(DynamicTexture):
 			font_size=Config.Fonts.display_size,
 			color=Config.Colors.white,
 			x=width // 4,
-			y=height - 16,
+			y=self.title.y - self.title.font_size - Config.Fonts.display_size / 2 - 16,
 			anchor_x="left",
 			anchor_y="center",
 			batch=self.batch,

@@ -49,6 +49,14 @@ class BatteryBase:
 		state.subscribe("battery_frac", on_change_battery_frac, immediate=True)
 		pg.clock.schedule_interval(blink, 0.5)
 
+	@property
+	def x(self):
+		return self.outline.x
+
+	@property
+	def y(self):
+		return self.outline.y
+
 	def draw(self):
 		self.batch.draw()
 
@@ -65,6 +73,7 @@ class BatterySmall(BatteryBase):
 			y,
 			batch=batch,
 		)
+
 
 class BatteryLarge(BatteryBase):
 	width = outline_large.width
