@@ -8,11 +8,11 @@ class UAVState(Enum):
 	NONE = 0
 	LOW_POWER = 1
 	SEARCH = 2
-	AWAIT_CONTROL = 3
-	APPROACH = 4
-	AWAIT_COMMAND = 5
-	CANCEL_COMMAND = 6
-	SELECT_TARGET = 7
+	APPROACH = 3
+	AWAIT_COMMAND = 4
+	CANCEL_COMMAND = 5
+	SELECT_TARGET = 6
+	MOVE_TO_TARGET = 7
 
 
 class State(Observable):
@@ -46,5 +46,6 @@ class State(Observable):
 		pitch, yaw = dir.get_pitch_yaw()
 		self.target_dir_yaw = yaw
 		self.target_dir_pitch = pitch
+
 
 state = State()

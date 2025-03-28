@@ -9,7 +9,7 @@ from ...dynamic_texture import DynamicTexture
 from ..base import UIBase
 from .none import HUDNone
 from .search import HUDSearch
-from .await_control import HUDAwaitControl
+from .approach import HUDApproach
 from .low_power import HUDLowPower
 from .await_command import HUDAwaitCommand
 from .cancel_command import HUDCancelCommand
@@ -27,7 +27,7 @@ class HUD(UIBase):
 		huds: dict[UAVState, DynamicTexture] = {
 			UAVState.NONE: HUDNone(hud_width, height),
 			UAVState.SEARCH: HUDSearch(hud_width, height),
-			UAVState.AWAIT_CONTROL: HUDAwaitControl(hud_width, height),
+			UAVState.APPROACH: HUDApproach(hud_width, height),
 			UAVState.LOW_POWER: HUDLowPower(hud_width, height),
 			UAVState.AWAIT_COMMAND: HUDAwaitCommand(hud_width, height),
 			UAVState.CANCEL_COMMAND: HUDCancelCommand(hud_width, height),
