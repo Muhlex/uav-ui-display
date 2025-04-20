@@ -2,71 +2,63 @@ import pyglet as pg
 import pyglet.gl as gl
 
 from config import Config
-from ...dynamic_texture import DynamicTexture
+from .base import HUDBase
 
+from components.gesture import Gesture, GestureType
 from components.battery import BatterySmall
 
-icon_point = pg.resource.image("assets/images/person/point.png")
-icon_cancel = pg.resource.image("assets/images/person/cancel.png")
+img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff.png")
+img_icon_abort = pg.resource.image("assets/images/icon/abort.png")
 
-class HUDAwaitCommand(DynamicTexture):
+
+class HUDAwaitCommand(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
 
-		# self.title = pg.text.Label(
-		# 	"Available actions:",
-		# 	font_name=Config.Fonts.display.name,
-		# 	font_size=Config.Fonts.display_size,
-		# 	color=Config.Colors.idle,
-		# 	x=width // 2,
-		# 	y=height - 2,
-		# 	anchor_x="center",
-		# 	anchor_y="top",
-		# 	batch=self.batch,
-		# )
-
-		self.point_label = pg.text.Label(
-			"Point to deliver",
-			font_name=Config.Fonts.display.name,
-			font_size=Config.Fonts.display_size,
-			color=Config.Colors.white,
-			x=width // 4,
-			y=height - 16,
-			anchor_x="left",
-			anchor_y="center",
-			batch=self.batch,
+		self.gesture_point = Gesture(
+			width // 2 - 22,
+			height - 24,
+			GestureType.POINT,
+			Config.Colors.white,
 		)
-		self.point_icon = pg.sprite.Sprite(
-			icon_point,
-			x=self.point_label.x - 4 - icon_point.width,
-			y=self.point_label.y - icon_point.height // 2,
+		self.icon_point = pg.sprite.Sprite(
+			img_icon_dropoff,
+			self.gesture_point.x - img_icon_dropoff.width // 2,
+			self.gesture_point.y - int(self.gesture_point.radius) - img_icon_dropoff.height - 4,
 			batch=self.batch,
 		)
 
-		self.cancel_label = pg.text.Label(
-			"Abort control",
-			font_name=Config.Fonts.display.name,
-			font_size=Config.Fonts.display_size,
-			color=Config.Colors.abort,
-			x=self.point_label.x,
-			y=self.point_label.y - self.point_label.font_size - 8,
-			anchor_x="left",
-			anchor_y="center",
+		self.gesture_abort = Gesture(
+			width // 2 + 22,
+			self.gesture_point.y,
+			GestureType.ABORT,
+			Config.Colors.negative,
+		)
+		self.icon_abort = pg.sprite.Sprite(
+			img_icon_abort,
+			self.gesture_abort.x - img_icon_dropoff.width // 2,
+			self.gesture_abort.y - int(self.gesture_abort.radius) - img_icon_dropoff.height - 4,
 			batch=self.batch,
 		)
-		self.cancel_icon = pg.sprite.Sprite(
-			icon_cancel,
-			x=self.cancel_label.x - 4 - icon_point.width,
-			y=self.cancel_label.y - icon_point.height // 2,
-			batch=self.batch,
-		)
-		self.cancel_icon.color = Config.Colors.abort
+		self.icon_abort.color = Config.Colors.negative
 
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 0, batch=self.batch)
+		self.gestures = [self.gesture_point, self.gesture_abort]
+
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 	def render(self):
 		self.buf.bind()
 		gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 		self.batch.draw()
+
+		active_gestures = []
+		for gesture in self.gestures:
+			if gesture.active:
+				active_gestures.append(gesture)
+			else:
+				gesture.draw()
+		for gesture in active_gestures:
+			gesture.draw()
+
 		self.buf.unbind()

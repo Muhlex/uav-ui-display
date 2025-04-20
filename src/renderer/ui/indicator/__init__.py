@@ -1,5 +1,6 @@
 from math import pi
-from util import clamp, map_range
+from pyglet.math import clamp
+from util import map_range
 
 import pyglet as pg
 import pyglet.gl as gl

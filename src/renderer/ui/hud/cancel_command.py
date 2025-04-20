@@ -1,10 +1,10 @@
 import pyglet as pg
 
 from config import Config
-from ...dynamic_texture import DynamicTexture
+from .base import HUDBase
 
 
-class HUDCancelCommand(DynamicTexture):
+class HUDCancelCommand(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
@@ -13,7 +13,7 @@ class HUDCancelCommand(DynamicTexture):
 			"Canceled",
 			font_name=Config.Fonts.display.name,
 			font_size=Config.Fonts.display_size * 2,
-			color=Config.Colors.abort,
+			color=Config.Colors.negative,
 			x=width // 2,
 			y=height // 2,
 			anchor_x="center",

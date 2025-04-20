@@ -15,7 +15,8 @@ class OverdrawMatrix(DynamicTexture):
 		self.overdraw_horz = overdraw_horz
 
 		self.uis: list[UIBase] = [
-			HUD(matrix_width, matrix_height - 8),
+			HUD(matrix_width, matrix_height),
+			# HUD(matrix_width, matrix_height - 8),
 			# Indicator(matrix_width, 8),
 		]
 

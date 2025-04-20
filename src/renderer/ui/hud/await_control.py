@@ -8,7 +8,7 @@ from assets.images.icon.wave import wave
 from components.battery import BatterySmall
 
 
-class HUDApproach(HUDBase):
+class HUDAwaitControl(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
@@ -16,7 +16,7 @@ class HUDApproach(HUDBase):
 		self.icon_wave = pg.sprite.Sprite(
 			wave,
 			width // 2 - wave.get_max_width() // 2,
-			height // 2 - wave.get_max_height() // 2,
+			height - wave.get_max_height(),
 			batch=self.batch,
 		)
 		self.icon_wave.color = Config.Colors.positive

@@ -47,7 +47,7 @@ class BatteryBase:
 				self.fill.color = self.fill.color[:3] + (255,)
 
 		state.subscribe("battery_frac", on_change_battery_frac, immediate=True)
-		pg.clock.schedule_interval(blink, 0.5)
+		pg.clock.schedule_interval(blink, 0.4)
 
 	@property
 	def x(self):

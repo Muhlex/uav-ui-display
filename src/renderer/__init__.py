@@ -22,7 +22,11 @@ class Renderer(pg.window.Window):
 		)
 
 		self.matrix_sprite = pg.sprite.Sprite(
-			self.matrix.texture, 0, debug_height + 8, batch=self.batch, blend_dest=pg.gl.GL_ZERO,
+			self.matrix.texture,
+			0,
+			debug_height + 8,
+			batch=self.batch,
+			blend_dest=pg.gl.GL_ZERO,
 		)
 		self.matrix_sprite.scale = matrix_scale
 
@@ -37,6 +41,9 @@ class Renderer(pg.window.Window):
 		self.sender = sender
 
 		self.debug = Debug(0, 0, width, debug_height, batch=self.batch)
+		for gui in self.debug.widgets:
+			self.push_handlers(gui)
+
 		self.fps = pg.window.FPSDisplay(self, samples=60)
 
 	def on_key_press(self, symbol: int, modifiers: int):

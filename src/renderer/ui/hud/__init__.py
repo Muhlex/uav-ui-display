@@ -5,38 +5,47 @@ import pyglet.gl as gl
 
 from state import state, UAVState
 
-from ...dynamic_texture import DynamicTexture
 from ..base import UIBase
+
+from .base import HUDBase
 from .none import HUDNone
+from .low_power import HUDLowPower
 from .search import HUDSearch
 from .approach import HUDApproach
-from .low_power import HUDLowPower
+from .await_control import HUDAwaitControl
 from .await_command import HUDAwaitCommand
 from .cancel_command import HUDCancelCommand
+from .select_target import HUDSelectTarget
 
 
 class HUD(UIBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.y_frac = 1.0
-		self.scroll_yawspeed = 0.08
 
 		gap = 16
 		tile_count = 3
 		hud_width = width // tile_count - gap
-		huds: dict[UAVState, DynamicTexture] = {
+		huds: dict[UAVState, HUDBase] = {
 			UAVState.NONE: HUDNone(hud_width, height),
+			UAVState.LOW_POWER: HUDLowPower(hud_width, height),
 			UAVState.SEARCH: HUDSearch(hud_width, height),
 			UAVState.APPROACH: HUDApproach(hud_width, height),
-			UAVState.LOW_POWER: HUDLowPower(hud_width, height),
+			UAVState.AWAIT_CONTROL: HUDAwaitControl(hud_width, height),
 			UAVState.AWAIT_COMMAND: HUDAwaitCommand(hud_width, height),
 			UAVState.CANCEL_COMMAND: HUDCancelCommand(hud_width, height),
+			UAVState.SELECT_TARGET: HUDSelectTarget(hud_width, height),
 		}
 		self.active_hud = huds[UAVState.NONE]
 
 		self.batch = pg.graphics.Batch()
 		self.sprites = [
-			pg.sprite.Sprite(self.active_hud.texture, i * (hud_width + gap), 0, batch=self.batch)
+			pg.sprite.Sprite(
+				self.active_hud.texture,
+				gap * 0.5 + i * (hud_width + gap),
+				0,
+				batch=self.batch,
+			)
 			for i in range(tile_count)
 		]
 
@@ -58,11 +67,12 @@ class HUD(UIBase):
 		pg.clock.schedule_interval(self.tick, 1 / 120)
 
 	def tick(self, dt: float):
-		if state.has_operator:
-			self.yaw = state.operator_dir_yaw
-		else:
-			unclamped_yaw = self.yaw + dt * self.scroll_yawspeed
+		yawspeed = self.active_hud.yawspeed
+		if yawspeed != 0.0:
+			unclamped_yaw = self.yaw + yawspeed * dt
 			self.yaw = (unclamped_yaw + pi) % (2 * pi) - pi
+		elif state.has_operator:
+			self.yaw = state.operator_dir_yaw
 
 	def render(self):
 		if self.active_hud is None:

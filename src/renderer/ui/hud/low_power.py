@@ -2,14 +2,16 @@ import pyglet as pg
 import pyglet.gl as gl
 
 from config import Config
-from ...dynamic_texture import DynamicTexture
+from .base import HUDBase
 
 from components.battery import BatteryLarge
 
 
-class HUDLowPower(DynamicTexture):
+class HUDLowPower(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
+		self.yawspeed = 0.08
+
 		self.batch = pg.graphics.Batch()
 
 		self.battery = BatteryLarge(
@@ -22,7 +24,7 @@ class HUDLowPower(DynamicTexture):
 			"Low Battery",
 			font_name=Config.Fonts.display.name,
 			font_size=Config.Fonts.display_size * 2,
-			color=Config.Colors.abort,
+			color=Config.Colors.negative,
 			x=width // 2,
 			y=self.battery.y - 8,
 			anchor_x="center",

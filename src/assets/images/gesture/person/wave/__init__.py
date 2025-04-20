@@ -1,11 +1,11 @@
 import pyglet as pg
 
 images = [
-	pg.resource.image("assets/images/person/wave/0.png"),
-	pg.resource.image("assets/images/person/wave/1.png"),
-	pg.resource.image("assets/images/person/wave/2.png"),
-	pg.resource.image("assets/images/person/wave/3.png"),
-	pg.resource.image("assets/images/person/wave/4.png"),
+	pg.resource.image("assets/images/gesture/person/wave/0.png"),
+	pg.resource.image("assets/images/gesture/person/wave/1.png"),
+	pg.resource.image("assets/images/gesture/person/wave/2.png"),
+	pg.resource.image("assets/images/gesture/person/wave/3.png"),
+	pg.resource.image("assets/images/gesture/person/wave/4.png"),
 ]
 
 frames = [

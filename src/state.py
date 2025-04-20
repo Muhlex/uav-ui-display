@@ -1,4 +1,5 @@
 from enum import Enum
+
 from pyglet.math import Vec3
 
 from util import Observable
@@ -9,25 +10,41 @@ class UAVState(Enum):
 	LOW_POWER = 1
 	SEARCH = 2
 	APPROACH = 3
-	AWAIT_COMMAND = 4
-	CANCEL_COMMAND = 5
-	SELECT_TARGET = 6
-	MOVE_TO_TARGET = 7
+	AWAIT_CONTROL = 4
+	AWAIT_COMMAND = 5
+	CANCEL_COMMAND = 6
+	SELECT_TARGET = 7
+	MOVE_TO_TARGET = 8
+
+
+class GestureType(Enum):
+	NONE = 0
+	ABORT = 1
+	CONFIRM = 2
+	POINT = 3
 
 
 class State(Observable):
 	has_operator = True
 	has_target = False
-	uav_state = UAVState.AWAIT_COMMAND
-	uav_origin = Vec3(0.0, 0.0, 0.0)
 	operator_origin = Vec3(0.0, 0.0, 0.0)
-	target_origin = Vec3(0.0, 0.0, 0.0)
-	battery_frac = 0.25
+	uav_origin = Vec3(0.0, 0.0, 20.0)
+	target_origin = Vec3(50.0, 0.0, 50.0)
+	uav_state = UAVState.SELECT_TARGET
+	battery_frac = 0.75
 
 	operator_dir_yaw = 0.0
 	operator_dir_pitch = 0.0
 	target_dir_yaw = 0.0
 	target_dir_pitch = 0.0
+
+	operator_gesture_type = GestureType.NONE
+	operator_gesture_progress = 0.0
+
+	operator_angle_shoulder = 0.0
+	operator_angle_elbow = 0.0
+
+	obstacles: list[tuple[Vec3, Vec3]] = []
 
 	def __init__(self):
 		self.subscribe("operator_origin", self._update_operator_dir_yaw)

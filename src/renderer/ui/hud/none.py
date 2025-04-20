@@ -1,7 +1,7 @@
-from ...dynamic_texture import DynamicTexture
+from .base import HUDBase
 
 
-class HUDNone(DynamicTexture):
+class HUDNone(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 

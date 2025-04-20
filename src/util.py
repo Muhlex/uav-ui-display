@@ -1,12 +1,18 @@
 from typing import NamedTuple
 
-
-def clamp(value: float, min_value: float, max_value: float):
-	return max(min_value, min(value, max_value))
+from math import sqrt, pow
 
 
-def map_range(value: float, old_min: float, old_max: float, new_min: float, new_max: float):
-	return new_min + (value - old_min) * (new_max - new_min) / (old_max - old_min)
+def map_range(value: float, in_min: float, in_max: float, out_min: float, out_max: float):
+	return out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min)
+
+
+def ease_in_cubic(value: float):
+	return value * value * value
+
+
+def ease_in_circ(value: float):
+	return 1 - sqrt(1 - pow(value, 2))
 
 
 class Observable:
