@@ -18,4 +18,4 @@ class Config:
 		positive = (50, 255, 50)
 		negative = (255, 80, 80)
 		search = (25, 75, 255)
-		active = (255, 135, 0)
+		active = (255, 200, 0)

@@ -28,8 +28,8 @@ class State(Observable):
 	has_operator = True
 	has_target = False
 	operator_origin = Vec3(0.0, 0.0, 0.0)
-	uav_origin = Vec3(0.0, 0.0, 20.0)
-	target_origin = Vec3(50.0, 0.0, 50.0)
+	uav_origin = Vec3(20.0, 0.0, 20.0)
+	target_origin = Vec3(50.0, 0.0, 100.0)
 	uav_state = UAVState.SELECT_TARGET
 	battery_frac = 0.75
 
@@ -44,7 +44,10 @@ class State(Observable):
 	operator_angle_shoulder = 0.0
 	operator_angle_elbow = 0.0
 
-	obstacles: list[tuple[Vec3, Vec3]] = []
+	obstacles: list[tuple[Vec3, Vec3]] = [
+		(Vec3(40.0, 0.0, 40.0), Vec3(40.0, 0.0, 80.0)),
+		(Vec3(40.0, 0.0, 80.0), Vec3(80.0, 0.0, 80.0)),
+	]
 
 	def __init__(self):
 		self.subscribe("operator_origin", self._update_operator_dir_yaw)

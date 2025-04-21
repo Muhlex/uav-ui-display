@@ -44,9 +44,9 @@ class Gesture:
 		self.fill.color = color
 		self.fill.visible = False
 
-		icon = icons[type]
+		img_icon = icons[type]
 		self.icon = pg.sprite.Sprite(
-			icon, x - icon.width // 2, y - icon.height // 2, batch=self.batch
+			img_icon, x - img_icon.width // 2, y - img_icon.height // 2, batch=self.batch
 		)
 		self.icon.color = color
 
@@ -78,6 +78,17 @@ class Gesture:
 	@property
 	def y(self):
 		return self.outline.y
+
+	@property
+	def position(self):
+		return self.outline.position
+
+	@position.setter
+	def position(self, pos: tuple[int, int, int]):
+		self.outline.position = pos
+		self.fill.position = pos
+		self.expander.position = (pos[0], pos[1])
+		self.icon.position = (pos[0] - self.icon.width // 2, pos[1] - self.icon.height // 2, 0)
 
 	@property
 	def radius(self):

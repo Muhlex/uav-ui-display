@@ -10,6 +10,13 @@ from .base import HUDBase
 
 from components.gesture import Gesture, GestureType
 
+img_icon_uav = pg.resource.image("assets/images/icon/uav.png")
+img_icon_uav.anchor_x = img_icon_uav.width // 2
+img_icon_uav.anchor_y = img_icon_uav.height // 2
+img_icon_target = pg.resource.image("assets/images/icon/target.png")
+img_icon_target.anchor_x = img_icon_target.width // 2
+img_icon_target.anchor_y = img_icon_target.height // 2
+
 
 class LandmarkType(Enum):
 	OPERATOR = 0
@@ -20,36 +27,52 @@ class LandmarkType(Enum):
 class HUDSelectTarget(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
+		self.batch_bg = pg.graphics.Batch()
 		self.batch = pg.graphics.Batch()
 
-		# self.gesture = Gesture(
-		# 	width // 2,
-		# 	height // 2,
-		# 	GestureType.CONFIRM,
-		# 	Config.Colors.positive,
-		# )
+		# self.bg = pg.shapes.Box(0, 0, self.width, self.height, batch=self.batch)
 
-		self.bg = pg.shapes.Box(0, 0, self.width, self.height, batch=self.batch)
-
+		icon_operator = Gesture(
+			0,
+			0,
+			GestureType.CONFIRM,
+			Config.Colors.positive,
+		)
+		icon_uav = pg.sprite.Sprite(img_icon_uav, 0, 0, batch=self.batch)
+		icon_uav.color = Config.Colors.white
+		icon_target = pg.sprite.Sprite(img_icon_target, 0, 0, batch=self.batch)
+		icon_target.color = Config.Colors.active
 		self.icons = {
-			LandmarkType.OPERATOR: pg.shapes.Circle(
-				0, 0, 3, color=Config.Colors.search, batch=self.batch
-			),
-			LandmarkType.UAV: pg.shapes.Circle(
-				0, 0, 2, color=Config.Colors.positive, batch=self.batch
-			),
-			LandmarkType.TARGET: pg.shapes.Circle(
-				0, 0, 1, color=Config.Colors.negative, batch=self.batch
-			),
+			LandmarkType.OPERATOR: icon_operator,
+			LandmarkType.UAV: icon_uav,
+			LandmarkType.TARGET: icon_target,
 		}
 
-	def update(self):
-		padding = [8, 4]
-		min_scale = 0.1
-		origins = [state.operator_origin, state.uav_origin, state.target_origin]
+		self.obstacles: list[pg.shapes.Line] = []
 
-		up = origins[LandmarkType.UAV.value] - origins[LandmarkType.OPERATOR.value]
-		map_angle = atan2(up.x, up.z)
+		def update_obstacles(obstacles):
+			add_count = len(obstacles) - len(self.obstacles)
+			if add_count > 0:
+				for _ in range(add_count):
+					self.obstacles.append(
+						pg.shapes.Line(
+							0, 0, 0, 0, color=Config.Colors.negative, batch=self.batch_bg
+						)
+					)
+			elif add_count < 0:
+				for _ in range(-add_count):
+					obstacle = self.obstacles.pop()
+					obstacle.delete()
+
+		state.subscribe("obstacles", update_obstacles, immediate=True)
+
+	def update(self):
+		padding = [self.icons[LandmarkType.OPERATOR].radius, self.icons[LandmarkType.OPERATOR].radius]
+		origins = [state.operator_origin, state.uav_origin, state.target_origin]
+		obstacles = state.obstacles.copy()
+
+		map_up = origins[LandmarkType.UAV.value] - origins[LandmarkType.OPERATOR.value]
+		map_angle = atan2(map_up.x, map_up.z)
 
 		def rotate_pos_xz(pos: pg.math.Vec3, angle: float):
 			s = sin(angle)
@@ -61,7 +84,6 @@ class HUDSelectTarget(HUDBase):
 			)
 
 		origins = [rotate_pos_xz(origin, map_angle) for origin in origins]
-
 		min_x = min(origins, key=lambda origin: origin.x).x
 		min_z = min(origins, key=lambda origin: origin.z).z
 		max_x = max(origins, key=lambda origin: origin.x).x
@@ -69,24 +91,38 @@ class HUDSelectTarget(HUDBase):
 		center = pg.math.Vec3((min_x + max_x) / 2, 0, (min_z + max_z) / 2)
 		delta = pg.math.Vec3(max_x - min_x, 0, max_z - min_z)
 
-		scale_x = (self.width - padding[0] * 2) / delta.x if delta.x != 0 else min_scale
-		scale_z = (self.height - padding[1] * 2) / delta.z if delta.z != 0 else min_scale
+		scale_x = (self.width - padding[0] * 2) / delta.x if delta.x != 0 else float("inf")
+		scale_z = (self.height - padding[1] * 2) / delta.z if delta.z != 0 else float("inf")
 		scale = min(scale_x, scale_z)
+		if scale == float("inf"):
+			scale = 1.0
 
 		map_origin = pg.math.Vec3(self.width / 2, 0, self.height / 2)
 
 		def world_to_map(pos: pg.math.Vec3):
 			pos_centered = pos - center
-			return pos_centered * scale + map_origin
+			pos_exact = pos_centered * scale + map_origin
+			return pg.math.Vec3(round(pos_exact.x), round(pos_exact.y), round(pos_exact.z))
 
 		for type, icon in self.icons.items():
 			map_pos = world_to_map(origins[type.value])
-			icon.position = (round(map_pos.x), round(map_pos.z))
+			icon.position = (map_pos.x, map_pos.z, 0)
+
+		for i, obstacle in enumerate(obstacles):
+			map_pos_start = world_to_map(rotate_pos_xz(obstacle[0], map_angle))
+			map_pos_end = world_to_map(rotate_pos_xz(obstacle[1], map_angle))
+			self.obstacles[i].x = map_pos_start.x
+			self.obstacles[i].y = map_pos_start.z
+			self.obstacles[i].x2 = map_pos_end.x
+			self.obstacles[i].y2 = map_pos_end.z
 
 	def render(self):
 		self.buf.bind()
 		gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-		self.batch.draw()
+
 		self.update()
-		# self.gesture.draw()
+		self.batch_bg.draw()
+		self.batch.draw()
+		self.icons[LandmarkType.OPERATOR].draw()
+
 		self.buf.unbind()
