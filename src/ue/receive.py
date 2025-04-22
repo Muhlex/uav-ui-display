@@ -1,55 +1,47 @@
 from threading import Thread
-from json import dumps, loads
 import atexit
 
-from websockets.sync.client import connect, ClientConnection
+from pythonosc.dispatcher import Dispatcher
+from pythonosc.osc_server import ThreadingOSCUDPServer
+
 from pyglet.math import Vec3
 
 from state import state
 
 
 class UEReceiver:
-	def __init__(self, websockets_uri: str, remote_control_presets: list[str]):
-		self.ws: ClientConnection | None = None
-		self.uri = websockets_uri
-		self.rcps = remote_control_presets
+	def __init__(self, osc_ip: str, osc_port: int):
+		def handle_state(address, *args):
+			name = address.split("/")[-1]
+			self.update_state(name, *args)
 
-		atexit.register(lambda: self.ws.close() if self.ws is not None else None)
+		def handle_default(address, *args):
+			print(f'Received unhandled OSC message: "{address}" {args}')
 
-	def init(self):
+		dispatcher = Dispatcher()
+		dispatcher.map("/state/*", handle_state)
+		dispatcher.set_default_handler(handle_default)
+		server = ThreadingOSCUDPServer((osc_ip, osc_port), dispatcher)
+
 		def thread():
-			try:
-				ws = connect(self.uri)
-			except Exception as e:
-				print(f"Failed to connect to Unreal Engine websocket server:\n{e}")
-				return
-
-			def get_rcp_register_message(rcp_name: str):
-				return dumps(
-					{
-						"MessageName": "preset.register",
-						"Parameters": {"PresetName": f"{rcp_name}"},
-					}
-				)
-
-			rcp_register_messages = map(get_rcp_register_message, self.rcps)
-			for msg in rcp_register_messages:
-				ws.send(msg)
-
-			while True:
-				msg = loads(ws.recv(decode=False))
-				if "Type" not in msg or msg["Type"] != "PresetFieldsChanged":
-					continue
-				for field in msg["ChangedFields"]:
-					name = field["PropertyLabel"]
-					value = field["PropertyValue"]
-					self.update_state(name, value)
+			server.serve_forever()
 
 		Thread(target=thread, daemon=True).start()
+		atexit.register(lambda: server.shutdown())
 
-	def update_state(self, name: str, ue_value):
-		if "X" in ue_value and "Y" in ue_value and "Z" in ue_value:
-			value = Vec3(ue_value["X"], ue_value["Z"], ue_value["Y"])  # in UE, Z is up
+	def update_state(self, name: str, *values):
+		if len(values) == 1:
+			value = values
+		elif len(values) == 3:
+			value = Vec3(values[0], values[2], values[1])  # in UE, Z is up
+		elif name == "obstacles" and len(values) % (3 * 2) == 0:
+			value = []
+			for i in range(0, len(values), 3 * 2):
+				start = Vec3(values[i], values[i + 2], values[i + 1])
+				end = Vec3(values[i + 3], values[i + 5], values[i + 4])
+				value.append((start, end))
 		else:
-			value = ue_value
+			print(f"Ignoring unexpected values for {name}: {values}")
+			return
+
 		setattr(state, name, value)
