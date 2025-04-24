@@ -1,3 +1,5 @@
+from itertools import chain
+
 import pyglet as pg
 
 from util import map_range, ease_in_cubic
@@ -7,16 +9,26 @@ from state import state, GestureType
 # Of course pyglet's primitives never render uneven diameter circles, so use images:
 img_outline = pg.resource.image("assets/images/gesture/outline.png")
 img_fill = pg.resource.image("assets/images/gesture/fill.png")
-img_outline.anchor_x = img_outline.width // 2
-img_outline.anchor_y = img_outline.height // 2
-img_fill.anchor_x = img_fill.width // 2
-img_fill.anchor_y = img_fill.height // 2
-
 icons = {
 	GestureType.ABORT: pg.resource.image("assets/images/gesture/person/abort.png"),
 	GestureType.CONFIRM: pg.resource.image("assets/images/gesture/person/confirm.png"),
 	GestureType.POINT: pg.resource.image("assets/images/gesture/person/point.png"),
 }
+
+img_outline_large = pg.resource.image("assets/images/gesture/outline_large.png")
+img_fill_large = pg.resource.image("assets/images/gesture/fill_large.png")
+icons_large = {
+	GestureType.ABORT: pg.resource.image("assets/images/gesture/person/abort_large.png"),
+	GestureType.CONFIRM: pg.resource.image("assets/images/gesture/person/confirm_large.png"),
+}
+
+for img in chain(
+	icons.values(),
+	icons_large.values(),
+	[img_outline, img_fill, img_outline_large, img_fill_large],
+):
+	img.anchor_x = img.width // 2
+	img.anchor_y = img.height // 2
 
 
 class Gesture:
@@ -31,7 +43,7 @@ class Gesture:
 		type: GestureType,
 		color: tuple[int, int, int],
 	):
-		self.type = type
+		self._type = type
 		self.active = False
 
 		self.batch = pg.graphics.Batch()
@@ -44,32 +56,29 @@ class Gesture:
 		self.fill.color = color
 		self.fill.visible = False
 
-		img_icon = icons[type]
-		self.icon = pg.sprite.Sprite(
-			img_icon, x - img_icon.width // 2, y - img_icon.height // 2, batch=self.batch
-		)
+		self.icons = icons
+		self.icon = pg.sprite.Sprite(self.icons[type], x, y, batch=self.batch)
 		self.icon.color = color
 
-		def on_change_operator_gesture_type(value: GestureType):
-			self.active = value == self.type
-			if self.active:
-				self.icon.color = (0, 0, 0)
-				self.fill.visible = True
-				self.expander.visible = True
-				on_change_operator_gesture_progress(state.operator_gesture_progress)
-			else:
-				self.icon.color = self.outline.color
-				self.fill.visible = False
-				self.expander.visible = False
+		state.subscribe("operator_gesture_type", self.on_change_gesture_type, immediate=True)
+		state.subscribe("operator_gesture_progress", self.on_change_gesture_progress)
 
-		state.subscribe("operator_gesture_type", on_change_operator_gesture_type, immediate=True)
+	def on_change_gesture_type(self, value: GestureType):
+		self.active = value == self._type
+		if self.active:
+			self.icon.color = (0, 0, 0)
+			self.fill.visible = True
+			self.expander.visible = True
+			self.on_change_gesture_progress(state.operator_gesture_progress)
+		else:
+			self.icon.color = self.outline.color
+			self.fill.visible = False
+			self.expander.visible = False
 
-		def on_change_operator_gesture_progress(value: float):
-			if not self.expander.visible:
-				return
-			self.expander.radius = map_range(ease_in_cubic(value), 0.0, 1.0, self.radius - 1, 120)
-
-		state.subscribe("operator_gesture_progress", on_change_operator_gesture_progress)
+	def on_change_gesture_progress(self, value: float):
+		if not self.expander.visible:
+			return
+		self.expander.radius = map_range(ease_in_cubic(value), 0.0, 1.0, self.radius - 1, 128)
 
 	@property
 	def x(self):
@@ -88,11 +97,61 @@ class Gesture:
 		self.outline.position = pos
 		self.fill.position = pos
 		self.expander.position = (pos[0], pos[1])
-		self.icon.position = (pos[0] - self.icon.width // 2, pos[1] - self.icon.height // 2, 0)
+		self.icon.position = pos
 
 	@property
 	def radius(self):
 		return self.outline.width / 2
 
+	@property
+	def visible(self):
+		return self.outline.visible
+
+	@visible.setter
+	def visible(self, visible: bool):
+		self.outline.visible = visible
+		self.icon.visible = visible
+		if self.active:
+			self.fill.visible = visible
+			self.expander.visible = visible
+
+	@property
+	def color(self):
+		return self.outline.color
+
+	@color.setter
+	def color(self, color: tuple[int, int, int]):
+		self.outline.color = color
+		self.fill.color = color
+		self.expander.color = color
+		if not self.active:
+			self.icon.color = color
+
+	@property
+	def type(self):
+		return self._type
+
+	@type.setter
+	def type(self, type: GestureType):
+		self._type = type
+		self.icon.image = self.icons[type]
+		self.on_change_gesture_type(state.operator_gesture_type)
+
 	def draw(self):
 		self.batch.draw()
+
+
+class GestureLarge(Gesture):
+	def __init__(
+		self,
+		x: float,
+		y: float,
+		type: GestureType,
+		color: tuple[int, int, int],
+	):
+		super().__init__(x, y, type, color)
+		self.icons = icons_large
+
+		self.icon.image = icons_large[type]
+		self.outline.image = img_outline_large
+		self.fill.image = img_fill_large

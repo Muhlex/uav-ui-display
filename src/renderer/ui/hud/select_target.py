@@ -6,6 +6,7 @@ import pyglet.gl as gl
 
 from config import Config
 from state import state
+
 from .base import HUDBase
 
 from components.gesture import Gesture, GestureType
@@ -16,6 +17,9 @@ img_icon_uav.anchor_y = img_icon_uav.height // 2
 img_icon_target = pg.resource.image("assets/images/icon/target.png")
 img_icon_target.anchor_x = img_icon_target.width // 2
 img_icon_target.anchor_y = img_icon_target.height
+img_icon_target_abort = pg.resource.image("assets/images/icon/target_abort.png")
+img_icon_target_abort.anchor_x = img_icon_target_abort.width // 2
+img_icon_target_abort.anchor_y = img_icon_target_abort.height
 
 
 class LandmarkType(Enum):
@@ -41,12 +45,46 @@ class HUDSelectTarget(HUDBase):
 		icon_uav = pg.sprite.Sprite(img_icon_uav, 0, 0, batch=self.batch)
 		icon_uav.color = Config.Colors.white
 		icon_target = pg.sprite.Sprite(img_icon_target, 0, 0, batch=self.batch)
-		icon_target.color = Config.Colors.active
+		icon_target.color = Config.Colors.positive
 		self.icons = {
 			LandmarkType.OPERATOR: icon_operator,
 			LandmarkType.UAV: icon_uav,
 			LandmarkType.TARGET: icon_target,
 		}
+
+		def cycle_gesture(gesture_type: GestureType | None = None):
+			if gesture_type is None:
+				gesture_type = (
+					GestureType.ABORT
+					if icon_operator.type == GestureType.CONFIRM
+					else GestureType.CONFIRM
+				)
+
+			color = {
+				GestureType.ABORT: Config.Colors.negative,
+				GestureType.CONFIRM: Config.Colors.positive,
+			}.get(gesture_type, Config.Colors.white)
+
+			icon_operator.type = gesture_type
+			icon_operator.color = color
+			icon_target.color = color
+			icon_target.image = (
+				img_icon_target_abort if gesture_type == GestureType.ABORT else img_icon_target
+			)
+
+		def on_cycle_operator_gesture_type(dt: float):
+			if icon_operator.type == state.operator_gesture_type:
+				return
+			cycle_gesture()
+
+		pg.clock.schedule_interval(on_cycle_operator_gesture_type, 1.5)
+
+		def on_change_operator_gesture_type(value: GestureType):
+			if value != GestureType.CONFIRM and value != GestureType.ABORT:
+				return
+			cycle_gesture(value)
+
+		state.subscribe("operator_gesture_type", on_change_operator_gesture_type)
 
 		self.obstacles: list[pg.shapes.Line] = []
 

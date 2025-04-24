@@ -10,7 +10,7 @@ from components.battery import BatteryLarge
 class HUDLowPower(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
-		self.yawspeed = 0.08
+		self.yawspeed = -0.08
 
 		self.batch = pg.graphics.Batch()
 

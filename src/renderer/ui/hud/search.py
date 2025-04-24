@@ -7,7 +7,7 @@ from .base import HUDBase
 class HUDSearch(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
-		self.yawspeed = -2.2
+		self.yawspeed = 2.2
 
 		self.batch = pg.graphics.Batch()
 
