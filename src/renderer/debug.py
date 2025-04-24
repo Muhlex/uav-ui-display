@@ -62,105 +62,122 @@ class Debug:
 				img_slider_knob,
 				batch=self.batch,
 			)
-			slider.value = map_range(value, min, max, 0.0, 100.0)
+
+			def set_value(value: float):
+				slider.value = map_range(value, min, max, 0.0, 100.0)
 
 			def on_change_handler(_, value: float):
 				on_change(map_range(value, 0.0, 100.0, min, max))
 
+			set_value(value)
 			slider.set_handler("on_change", on_change_handler)
 			self.labels.append(label)
 			self.widgets.append(slider)
+
+			return set_value
 
 		# BATTERY
 		def on_change_battery_frac(value: float):
 			state.battery_frac = value
 
-		create_slider("Battery level", state.battery_frac, on_change_battery_frac)
+		set_battery_frac = create_slider(
+			"Battery level",
+			state.battery_frac,
+			on_change_battery_frac,
+		)
+		state.subscribe("battery_frac", lambda v: set_battery_frac(v))
 
 		# GESTURE PROGRESS
 		def on_change_operator_gesture_progress(value: float):
 			state.operator_gesture_progress = value
 
-		create_slider(
+		set_operator_gesture_progress = create_slider(
 			"Operator gesture progress",
 			state.operator_gesture_progress,
 			on_change_operator_gesture_progress,
 		)
+		state.subscribe("operator_gesture_progress", lambda v: set_operator_gesture_progress(v))
 
 		# OPERATOR ORIGIN
 		def on_change_operator_origin_x(value: float):
 			vec = pg.math.Vec3(value, state.operator_origin.y, state.operator_origin.z)
 			state.operator_origin = vec
 
-		create_slider(
+		set_operator_origin_x = create_slider(
 			"Operator origin X",
 			state.operator_origin.x,
 			on_change_operator_origin_x,
-			min=-500.0,
-			max=500.0,
+			min=-1024.0,
+			max=1024.0,
 		)
+		state.subscribe("operator_origin", lambda v: set_operator_origin_x(v.x))
 
 		def on_change_operator_origin_z(value: float):
 			vec = pg.math.Vec3(state.operator_origin.x, state.operator_origin.y, value)
 			state.operator_origin = vec
 
-		create_slider(
+		set_operator_origin_z = create_slider(
 			"Operator origin Z",
 			state.operator_origin.z,
 			on_change_operator_origin_z,
-			min=-500.0,
-			max=500.0,
+			min=-1024.0,
+			max=1024.0,
 		)
+		state.subscribe("operator_origin", lambda v: set_operator_origin_z(v.z))
 
 		# UAV ORIGIN
 		def on_change_uav_origin_x(value: float):
 			vec = pg.math.Vec3(value, state.uav_origin.y, state.uav_origin.z)
 			state.uav_origin = vec
 
-		create_slider(
+		set_uav_origin_x = create_slider(
 			"UAV origin X",
 			state.uav_origin.x,
 			on_change_uav_origin_x,
-			min=-500.0,
-			max=500.0,
+			min=-1024.0,
+			max=1024.0,
 		)
+		state.subscribe("uav_origin", lambda v: set_uav_origin_x(v.x))
 
 		def on_change_uav_origin_z(value: float):
 			vec = pg.math.Vec3(state.uav_origin.x, state.uav_origin.y, value)
 			state.uav_origin = vec
 
-		create_slider(
+		set_uav_origin_z = create_slider(
 			"UAV origin Z",
 			state.uav_origin.z,
 			on_change_uav_origin_z,
-			min=-500.0,
-			max=500.0,
+			min=-1024.0,
+			max=1024.0,
 		)
+		state.subscribe("uav_origin", lambda v: set_uav_origin_z(v.z))
 
 		# TARGET ORIGIN
 		def on_change_target_origin_x(value: float):
 			vec = pg.math.Vec3(value, state.target_origin.y, state.target_origin.z)
 			state.target_origin = vec
 
-		create_slider(
+		set_target_origin_x = create_slider(
 			"Target origin X",
 			state.target_origin.x,
 			on_change_target_origin_x,
-			min=-500.0,
-			max=500.0,
+			min=-1024.0,
+			max=1024.0,
 		)
+		state.subscribe("target_origin", lambda v: set_target_origin_x(v.x))
 
 		def on_change_target_origin_z(value: float):
 			vec = pg.math.Vec3(state.target_origin.x, state.target_origin.y, value)
 			state.target_origin = vec
 
-		create_slider(
+		set_target_origin_z = create_slider(
 			"Target origin Z",
 			state.target_origin.z,
 			on_change_target_origin_z,
-			min=-500.0,
-			max=500.0,
+			min=-1024.0,
+			max=1024.0,
 		)
+		state.subscribe("target_origin", lambda v: set_target_origin_z(v.z))
 
 		self.update(0.0)
 		pg.clock.schedule_interval(self.update, 1 / 30)
