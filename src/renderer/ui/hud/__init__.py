@@ -23,7 +23,7 @@ class HUD(UIBase):
 		super().__init__(width, height)
 		self.y_frac = 1.0
 
-		gap = 16
+		gap = 2
 		tile_count = 3
 		hud_width = width // tile_count - gap
 		huds: dict[UAVState, HUDBase] = {

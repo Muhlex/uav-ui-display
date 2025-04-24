@@ -16,12 +16,11 @@ class OverdrawMatrix(DynamicTexture):
 
 		self.uis: list[UIBase] = [
 			HUD(matrix_width, matrix_height),
-			# HUD(matrix_width, matrix_height - 8),
 			# Indicator(matrix_width, 8),
 		]
 
 	def yaw_to_x(self, yaw: float):
-		return self.overdraw_horz + self.matrix_width // 2 - yaw / (2 * pi) * self.matrix_width
+		return self.overdraw_horz + self.matrix_width // 2 + yaw / (2 * pi) * self.matrix_width
 
 	def y_frac_to_y(self, y_frac: float):
 		return int(y_frac * self.height)

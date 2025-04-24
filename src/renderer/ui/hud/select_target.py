@@ -15,7 +15,7 @@ img_icon_uav.anchor_x = img_icon_uav.width // 2
 img_icon_uav.anchor_y = img_icon_uav.height // 2
 img_icon_target = pg.resource.image("assets/images/icon/target.png")
 img_icon_target.anchor_x = img_icon_target.width // 2
-img_icon_target.anchor_y = img_icon_target.height // 2
+img_icon_target.anchor_y = img_icon_target.height
 
 
 class LandmarkType(Enum):
@@ -67,54 +67,65 @@ class HUDSelectTarget(HUDBase):
 		state.subscribe("obstacles", update_obstacles, immediate=True)
 
 	def update(self):
-		padding = [self.icons[LandmarkType.OPERATOR].radius, self.icons[LandmarkType.OPERATOR].radius]
-		origins = [state.operator_origin, state.uav_origin, state.target_origin]
-		obstacles = state.obstacles.copy()
+		max_scale = 0.06
+		padding = [
+			self.icons[LandmarkType.OPERATOR].radius + 10,
+			self.icons[LandmarkType.OPERATOR].radius + 8,
+		]
+
+		def world_to_xz(pos: pg.math.Vec3):
+			return pg.math.Vec2(pos.x, pos.z)
+
+		origins = [
+			world_to_xz(pos)
+			for pos in [state.operator_origin, state.uav_origin, state.target_origin]
+		]
+		obstacles = [(world_to_xz(start), world_to_xz(end)) for start, end in state.obstacles]
+		state.obstacles.copy()
 
 		map_up = origins[LandmarkType.UAV.value] - origins[LandmarkType.OPERATOR.value]
-		map_angle = atan2(map_up.x, map_up.z)
+		map_angle = atan2(map_up.x, map_up.y)
 
-		def rotate_pos_xz(pos: pg.math.Vec3, angle: float):
+		def rotate_pos(pos: pg.math.Vec2, angle: float):
 			s = sin(angle)
 			c = cos(angle)
-			return pg.math.Vec3(
-				pos.x * c - pos.z * s,
-				pos.y,
-				pos.x * s + pos.z * c,
+			return pg.math.Vec2(
+				pos.x * c - pos.y * s,
+				pos.x * s + pos.y * c,
 			)
 
-		origins = [rotate_pos_xz(origin, map_angle) for origin in origins]
+		origins = [rotate_pos(origin, map_angle) for origin in origins]
 		min_x = min(origins, key=lambda origin: origin.x).x
-		min_z = min(origins, key=lambda origin: origin.z).z
+		min_y = min(origins, key=lambda origin: origin.y).y
 		max_x = max(origins, key=lambda origin: origin.x).x
-		max_z = max(origins, key=lambda origin: origin.z).z
-		center = pg.math.Vec3((min_x + max_x) / 2, 0, (min_z + max_z) / 2)
-		delta = pg.math.Vec3(max_x - min_x, 0, max_z - min_z)
+		max_y = max(origins, key=lambda origin: origin.y).y
+		center = pg.math.Vec2((min_x + max_x) / 2, (min_y + max_y) / 2)
+		delta = pg.math.Vec2(max_x - min_x, max_y - min_y)
 
 		scale_x = (self.width - padding[0] * 2) / delta.x if delta.x != 0 else float("inf")
-		scale_z = (self.height - padding[1] * 2) / delta.z if delta.z != 0 else float("inf")
-		scale = min(scale_x, scale_z)
+		scale_y = (self.height - padding[1] * 2) / delta.y if delta.y != 0 else float("inf")
+		scale = min(scale_x, scale_y, max_scale)
 		if scale == float("inf"):
-			scale = 1.0
+			scale = max_scale
 
-		map_origin = pg.math.Vec3(self.width / 2, 0, self.height / 2)
+		map_origin = pg.math.Vec2(self.width / 2, self.height / 2)
 
-		def world_to_map(pos: pg.math.Vec3):
+		def world_to_map(pos: pg.math.Vec2):
 			pos_centered = pos - center
 			pos_exact = pos_centered * scale + map_origin
-			return pg.math.Vec3(round(pos_exact.x), round(pos_exact.y), round(pos_exact.z))
+			return pg.math.Vec2(round(pos_exact.x), round(pos_exact.y))
 
 		for type, icon in self.icons.items():
 			map_pos = world_to_map(origins[type.value])
-			icon.position = (map_pos.x, map_pos.z, 0)
+			icon.position = (map_pos.x, map_pos.y, 0)
 
 		for i, obstacle in enumerate(obstacles):
-			map_pos_start = world_to_map(rotate_pos_xz(obstacle[0], map_angle))
-			map_pos_end = world_to_map(rotate_pos_xz(obstacle[1], map_angle))
+			map_pos_start = world_to_map(rotate_pos(obstacle[0], map_angle))
+			map_pos_end = world_to_map(rotate_pos(obstacle[1], map_angle))
 			self.obstacles[i].x = map_pos_start.x
-			self.obstacles[i].y = map_pos_start.z
+			self.obstacles[i].y = map_pos_start.y
 			self.obstacles[i].x2 = map_pos_end.x
-			self.obstacles[i].y2 = map_pos_end.z
+			self.obstacles[i].y2 = map_pos_end.y
 
 	def render(self):
 		self.buf.bind()

@@ -30,15 +30,18 @@ class UEReceiver:
 		atexit.register(lambda: server.shutdown())
 
 	def update_state(self, name: str, *values):
+		def convert_vec3(x: float, y: float, z: float):
+			return Vec3(y, z, x)  # UE uses left-handed coordinate system with Z up
+
 		if len(values) == 1:
 			value = values
 		elif len(values) == 3:
-			value = Vec3(values[0], values[2], values[1])  # in UE, Z is up
+			value = convert_vec3(*values)
 		elif name == "obstacles" and len(values) % (3 * 2) == 0:
 			value = []
 			for i in range(0, len(values), 3 * 2):
-				start = Vec3(values[i], values[i + 2], values[i + 1])
-				end = Vec3(values[i + 3], values[i + 5], values[i + 4])
+				start = convert_vec3(*values[i : i + 3])
+				end = convert_vec3(*values[i + 3 : i + 6])
 				value.append((start, end))
 		else:
 			print(f"Ignoring unexpected values for {name}: {values}")
