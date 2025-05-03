@@ -201,7 +201,7 @@ Operator gesture: {state.operator_gesture_type}
 Operator gesture progress: {state.operator_gesture_progress:.2f}
 
 Bystander count: {len(state.bystander_origins)}
-Yaws towards bystanders: {[degrees(yaw) for yaw in state.bystander_dir_yaws]}
+Yaws towards bystanders: {[round(degrees(yaw), 2) for yaw in state.bystander_dir_yaws]}
 
 Battery level: {state.battery_frac:.2f}
 """

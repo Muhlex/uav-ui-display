@@ -44,6 +44,7 @@ class State(Observable):
 		Vec3(40.0, 0.0, -40.0),
 		Vec3(500.0, 0.0, 0.0),
 		Vec3(800.0, 0.0, -1000.0),
+		Vec3(810.0, 0.0, -1010.0),
 	]
 	bystander_angles_shoulder: list[float] = []
 	bystander_angles_elbow: list[float] = []
