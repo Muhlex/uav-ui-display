@@ -5,8 +5,8 @@ from config import Config
 from state import state
 from .base import HUDBase
 
-from components.gesture import GestureLarge, GestureType
 from components.battery import BatterySmall
+from components.gesture import GestureLarge, GestureType
 
 img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff_large.png")
 img_icon_abort = pg.resource.image("assets/images/icon/abort_large.png")
@@ -16,6 +16,8 @@ class HUDMoveToTarget(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
+
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 		self.icon_gesture = GestureLarge(
 			width // 2 - 24,
@@ -64,8 +66,6 @@ class HUDMoveToTarget(HUDBase):
 			cycle_gesture(value)
 
 		state.subscribe("operator_gesture_type", on_change_operator_gesture_type)
-
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 	def render(self):
 		self.buf.bind()

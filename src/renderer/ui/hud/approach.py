@@ -13,6 +13,8 @@ class HUDApproach(HUDBase):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
 
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
+
 		self.icon_wave = pg.sprite.Sprite(
 			wave,
 			width // 2 - wave.get_max_width() // 2,
@@ -20,8 +22,6 @@ class HUDApproach(HUDBase):
 			batch=self.batch,
 		)
 		self.icon_wave.color = Config.Colors.positive
-
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 	def render(self):
 		self.buf.bind()

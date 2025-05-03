@@ -5,13 +5,17 @@ from config import Config
 from .base import HUDBase
 
 from assets.images.icon.wave import wave
-from components.battery import BatterySmall
+# from components.battery import BatterySmall
 
 
 class HUDAwaitControl(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
+		self.yawspeed = -0.12
+
 		self.batch = pg.graphics.Batch()
+
+		# self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 		self.icon_wave = pg.sprite.Sprite(
 			wave,
@@ -20,8 +24,6 @@ class HUDAwaitControl(HUDBase):
 			batch=self.batch,
 		)
 		self.icon_wave.color = Config.Colors.positive
-
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 	def render(self):
 		self.buf.bind()

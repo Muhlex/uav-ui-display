@@ -9,6 +9,7 @@ from state import state
 
 from .base import HUDBase
 
+from components.battery import BatterySmall
 from components.gesture import Gesture, GestureType
 
 img_icon_uav = pg.resource.image("assets/images/icon/uav.png")
@@ -35,6 +36,8 @@ class HUDSelectTarget(HUDBase):
 		self.batch = pg.graphics.Batch()
 
 		# self.bg = pg.shapes.Box(0, 0, self.width, self.height, batch=self.batch)
+
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 		icon_operator = Gesture(
 			0,
@@ -88,7 +91,7 @@ class HUDSelectTarget(HUDBase):
 
 		self.obstacles: list[pg.shapes.Line] = []
 
-		def update_obstacles(obstacles):
+		def on_change_obstacles(obstacles: list[tuple[pg.math.Vec3, pg.math.Vec3]]):
 			add_count = len(obstacles) - len(self.obstacles)
 			if add_count > 0:
 				for _ in range(add_count):
@@ -102,7 +105,7 @@ class HUDSelectTarget(HUDBase):
 					obstacle = self.obstacles.pop()
 					obstacle.delete()
 
-		state.subscribe("obstacles", update_obstacles, immediate=True)
+		state.subscribe("obstacles", on_change_obstacles, immediate=True)
 
 	def update(self):
 		max_scale = 0.06

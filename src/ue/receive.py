@@ -37,6 +37,10 @@ class UEReceiver:
 			value = values
 		elif len(values) == 3:
 			value = convert_vec3(*values)
+		elif name == "bystander_origins" and len(values) % 3 == 0:
+			value = []
+			for i in range(0, len(values), 3):
+				value.append(convert_vec3(*values[i : i + 3]))
 		elif name == "obstacles" and len(values) % (3 * 2) == 0:
 			value = []
 			for i in range(0, len(values), 3 * 2):

@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 from math import sqrt, pow
 
+from pyglet.math import Vec2
 
 def map_range(value: float, in_min: float, in_max: float, out_min: float, out_max: float):
 	return out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min)
@@ -13,6 +14,16 @@ def ease_in_cubic(value: float):
 
 def ease_in_circ(value: float):
 	return 1 - sqrt(1 - pow(value, 2))
+
+
+def rotate_around(x: float, y: float, origin_x: float = 0, origin_y: float = 0, angle: float = 0):
+	pos = Vec2(x, y)
+	origin = Vec2(origin_x, origin_y)
+
+	pos -= origin
+	pos = pos.rotate(angle)
+	pos += origin
+	return pos
 
 
 class Observable:

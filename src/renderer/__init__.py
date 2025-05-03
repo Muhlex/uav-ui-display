@@ -2,7 +2,7 @@ import pyglet as pg
 
 from ue.send import UESender
 
-from .matrix import Matrix
+from .led_matrix import LEDMatrix
 from .debug import Debug
 
 
@@ -14,7 +14,7 @@ class Renderer(pg.window.Window):
 		height = 512 + matrix_height * matrix_scale + matrix_height + 8 + 8
 		super().__init__(width, height, caption=type(self).__name__)
 
-		self.matrix = Matrix(matrix_width, matrix_height)
+		self.matrix = LEDMatrix(matrix_width, matrix_height)
 		self.batch = pg.graphics.Batch()
 
 		self.background = pg.shapes.Rectangle(
@@ -31,7 +31,7 @@ class Renderer(pg.window.Window):
 		self.matrix_sprite.scale = matrix_scale
 
 		self.overdraw_matrix_sprite = pg.sprite.Sprite(
-			self.matrix.overdraw.texture,
+			self.matrix.canvas.texture,
 			0,
 			debug_height + self.matrix_sprite.height + 8 + 8,
 			blend_dest=pg.gl.GL_ZERO,

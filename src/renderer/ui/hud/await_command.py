@@ -4,8 +4,8 @@ import pyglet.gl as gl
 from config import Config
 from .base import HUDBase
 
-from components.gesture import Gesture, GestureType
 from components.battery import BatterySmall
+from components.gesture import Gesture, GestureType
 
 img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff.png")
 img_icon_abort = pg.resource.image("assets/images/icon/abort.png")
@@ -15,6 +15,8 @@ class HUDAwaitCommand(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
+
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 		self.gesture_point = Gesture(
 			width // 2 - 22,
@@ -44,8 +46,6 @@ class HUDAwaitCommand(HUDBase):
 		self.icon_abort.color = Config.Colors.negative
 
 		self.gestures = [self.gesture_point, self.gesture_abort]
-
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
 
 	def render(self):
 		self.buf.bind()

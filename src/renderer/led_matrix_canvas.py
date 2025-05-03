@@ -4,19 +4,20 @@ import pyglet.gl as gl
 
 from .dynamic_texture import DynamicTexture
 from .ui.base import UIBase
-from .ui.hud import HUD
-# from .ui.indicator import Indicator
 
 
-class OverdrawMatrix(DynamicTexture):
+class LEDMatrixCanvas(DynamicTexture):
 	def __init__(self, matrix_width: int, matrix_height: int, overdraw_horz: int):
+		from .ui.hud import HUD
+		from .ui.await_control_360 import AwaitControl360
+
 		super().__init__(matrix_width + overdraw_horz * 2, matrix_height)
 		self.matrix_width = matrix_width
 		self.overdraw_horz = overdraw_horz
 
 		self.uis: list[UIBase] = [
 			HUD(matrix_width, matrix_height),
-			# Indicator(matrix_width, 8),
+			AwaitControl360(self, matrix_height - 32),
 		]
 
 	def yaw_to_x(self, yaw: float):
@@ -31,6 +32,8 @@ class OverdrawMatrix(DynamicTexture):
 		self.buf.unbind()
 
 		for ui in self.uis:
+			if not ui.visible:
+				continue
 			ui.render()
 			tex = ui.texture
 			x = int(self.yaw_to_x(ui.yaw)) - tex.width // 2
