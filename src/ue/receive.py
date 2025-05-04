@@ -35,7 +35,7 @@ class UEReceiver:
 			return Vec3(y, z, x)  # UE uses left-handed coordinate system with Z up
 
 		if len(values) == 1:
-			value = values
+			value = values[0]
 		elif len(values) == 3:
 			value = convert_vec3(*values)
 		elif name == "bystander_origins" and len(values) % 3 == 0:
