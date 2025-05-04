@@ -51,7 +51,7 @@ class Person:
 		self.body.x2, self.body.y2 = self.legs[0].x2, self.legs[0].y2 + int(scale * 2.4)
 
 		arm_origin_x = self.body.x2 - 1
-		arm_origin_y = self.body.y2 - 2
+		arm_origin_y = self.body.y2 - int(scale * 0.6)
 		self.arms[0][0].x, self.arms[0][0].y = arm_origin_x, arm_origin_y
 		self.arms[0][0].x2, self.arms[0][0].y2 = arm_origin_x - int(scale * 0.8), arm_origin_y
 		self.arms[0][1].x, self.arms[0][1].y = self.arms[0][0].x2, self.arms[0][0].y2
@@ -66,7 +66,7 @@ class Person:
 		self.head.radius = scale
 		self.head.x, self.head.y = self.body.x2, self.body.y2 + self.head.radius
 
-		self.rotate_arms(
+		self.set_arms_rotations(
 			left_upper=self._arm_left_upper_angle,
 			left_fore=self._arm_left_fore_angle,
 			right_upper=self._arm_right_upper_angle,
@@ -135,7 +135,7 @@ class Person:
 			for segment in arm:
 				segment.visible = visible
 
-	def rotate_arms(
+	def set_arms_rotations(
 		self,
 		left_upper: float | None = None,
 		left_fore: float | None = None,

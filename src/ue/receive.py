@@ -4,6 +4,7 @@ import atexit
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import ThreadingOSCUDPServer
 
+from math import radians
 from pyglet.math import Vec3
 
 from state import state
@@ -41,6 +42,11 @@ class UEReceiver:
 			value = []
 			for i in range(0, len(values), 3):
 				value.append(convert_vec3(*values[i : i + 3]))
+		elif name == "bystander_arms_angles" and len(values) % 4 == 0:
+			value = []
+			for i in range(0, len(values), 4):
+				angles = [radians(angle) for angle in values[i : i + 4]]
+				value.append(angles)
 		elif name == "obstacles" and len(values) % (3 * 2) == 0:
 			value = []
 			for i in range(0, len(values), 3 * 2):

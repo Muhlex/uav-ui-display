@@ -46,8 +46,8 @@ class State(Observable):
 		Vec3(800.0, 0.0, -1000.0),
 		Vec3(810.0, 0.0, -1010.0),
 	]
-	bystander_angles_shoulder: list[float] = []
-	bystander_angles_elbow: list[float] = []
+	# left_shoulder, left_elbow, right_shoulder, right_elbow:
+	bystander_arms_angles: list[tuple[float, float, float, float]] = []
 	bystander_selected_index: int = -1
 
 	obstacles: list[tuple[Vec3, Vec3]] = [

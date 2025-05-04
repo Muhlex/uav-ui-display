@@ -1,4 +1,4 @@
-from math import pi, radians, degrees
+from math import pi, radians
 from pyglet.math import clamp
 from util import map_range
 
@@ -59,7 +59,7 @@ class AwaitControl360(UIBase):
 			add_count = len(bystander_dir_yaws) - len(self.bystanders)
 			if add_count > 0:
 				for _ in range(add_count):
-					self.bystanders.append(Person(0, 0, 4, batch=self.batch))
+					self.bystanders.append(Person(0, 0, batch=self.batch))
 			elif add_count < 0:
 				for _ in range(-add_count):
 					bystander = self.bystanders.pop()
@@ -90,6 +90,18 @@ class AwaitControl360(UIBase):
 				)
 
 		state.subscribe("bystander_dir_yaws", on_change_bystander_dir_yaws, immediate=True)
+
+		def on_change_bystander_arms_angles(
+			bystander_arms_angles: list[tuple[float, float, float, float]],
+		):
+			for i, angles in enumerate(bystander_arms_angles):
+				if i >= len(self.bystanders):  # meh
+					print("Warning: bystander_arms_angles has more elements than there are bystanders.")
+					return
+				bystander = self.bystanders[i]
+				bystander.set_arms_rotations(*angles)
+
+		state.subscribe("bystander_arms_angles", on_change_bystander_arms_angles, immediate=True)
 
 	def render(self):
 		self.buf.bind()
