@@ -135,6 +135,20 @@ class Person:
 			for segment in arm:
 				segment.visible = visible
 
+	@property
+	def color(self):
+		return self.head.color
+
+	@color.setter
+	def color(self, value: tuple[int, int, int]):
+		self.head.color = value
+		self.body.color = value
+		for leg in self.legs:
+			leg.color = value
+		for arm in self.arms:
+			for segment in arm:
+				segment.color = value
+
 	def set_arms_rotations(
 		self,
 		left_upper: float | None = None,

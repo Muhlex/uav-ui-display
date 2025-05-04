@@ -5,6 +5,7 @@ from util import map_range
 import pyglet as pg
 import pyglet.gl as gl
 
+from config import Config
 from state import state, UAVState
 
 from ..led_matrix_canvas import LEDMatrixCanvas
@@ -102,6 +103,15 @@ class AwaitControl360(UIBase):
 				bystander.set_arms_rotations(*angles)
 
 		state.subscribe("bystander_arms_angles", on_change_bystander_arms_angles, immediate=True)
+
+		def on_change_bystander_selected_index(index: int):
+			if index < 0 or index >= len(self.bystanders):
+				for bystander in self.bystanders:
+					bystander.color = (255, 255, 255)
+			else:
+				self.bystanders[index].color = Config.Colors.positive
+
+		state.subscribe("bystander_selected_index", on_change_bystander_selected_index, immediate=True)
 
 	def render(self):
 		self.buf.bind()
