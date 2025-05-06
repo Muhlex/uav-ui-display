@@ -11,7 +11,7 @@ from assets.images.icon.wave import wave
 class HUDAwaitControl(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
-		self.yawspeed = -0.12
+		self.yawspeed = -0.15
 
 		self.batch = pg.graphics.Batch()
 

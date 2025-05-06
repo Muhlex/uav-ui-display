@@ -11,6 +11,8 @@ from components.battery import BatterySmall
 class HUDApproach(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
+		self.yawspeed = -0.15
+
 		self.batch = pg.graphics.Batch()
 
 		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)

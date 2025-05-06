@@ -4,8 +4,12 @@ import atexit
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import ThreadingOSCUDPServer
 
+from enum import Enum
+
 from math import radians
 from pyglet.math import Vec3
+
+import pyglet as pg
 
 from state import state
 
@@ -14,7 +18,7 @@ class UEReceiver:
 	def __init__(self, osc_ip: str, osc_port: int):
 		def handle_state(address, *args):
 			name = address.split("/")[-1]
-			self.update_state(name, *args)
+			pg.clock.schedule_once(lambda _: self.update_state(name, *args), 0)
 
 		def handle_default(address, *args):
 			print(f'Received unhandled OSC message: "{address}" {args}')
@@ -36,17 +40,21 @@ class UEReceiver:
 
 		if len(values) == 1:
 			value = values[0]
+			current = getattr(state, name)
+			if isinstance(current, Enum):
+				enum_type = type(current)
+				value = enum_type(value)
 		elif len(values) == 3:
 			value = convert_vec3(*values)
-		elif name == "bystander_origins" and len(values) % 3 == 0:
-			value = []
-			for i in range(0, len(values), 3):
-				value.append(convert_vec3(*values[i : i + 3]))
-		elif name == "bystander_arms_angles" and len(values) % 4 == 0:
-			value = []
-			for i in range(0, len(values), 4):
-				angles = [radians(angle) for angle in values[i : i + 4]]
-				value.append(angles)
+		elif name == "bystanders" and len(values) % 7 == 0:
+			origins = []
+			arms_angles = []
+			for i in range(0, len(values), 7):
+				origins.append(convert_vec3(*values[i : i + 3]))
+				arms_angles.append([radians(angle) for angle in values[i + 3 : i + 7]])
+			setattr(state, "bystander_origins", origins)
+			setattr(state, "bystander_arms_angles", arms_angles)
+			return
 		elif name == "obstacles" and len(values) % (3 * 2) == 0:
 			value = []
 			for i in range(0, len(values), 3 * 2):
@@ -54,7 +62,7 @@ class UEReceiver:
 				end = convert_vec3(*values[i + 3 : i + 6])
 				value.append((start, end))
 		else:
-			print(f"Ignoring unexpected values for {name}: {values}")
+			print(f"Ignoring unexpected values for '{name}': {values}")
 			return
 
 		setattr(state, name, value)

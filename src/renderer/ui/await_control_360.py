@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from math import pi, radians
 from pyglet.math import clamp
 from util import map_range
@@ -13,8 +15,8 @@ from .base import UIBase
 
 from components.person import Person
 
-MIN_DISTANCE = 250
-MAX_DISTANCE = 1_500
+MIN_DIST = 250
+MAX_DIST = 1_500
 
 
 class AwaitControl360(UIBase):
@@ -29,7 +31,7 @@ class AwaitControl360(UIBase):
 
 		state.subscribe("uav_state", on_change_uav_state, immediate=True)
 
-		self.bystanders: list[Person] = []
+		self.bystanders_icons: list[Person] = []
 
 		def get_bystander_overlap(yaw: float, other_yaw: float, radius: float):
 			delta = (yaw - other_yaw + pi) % (2 * pi) - pi
@@ -57,38 +59,50 @@ class AwaitControl360(UIBase):
 			return None
 
 		def on_change_bystander_dir_yaws(bystander_dir_yaws: list[float]):
-			add_count = len(bystander_dir_yaws) - len(self.bystanders)
+			new_len = len(bystander_dir_yaws)
+			add_count = new_len - len(self.bystanders_icons)
 			if add_count > 0:
 				for _ in range(add_count):
-					self.bystanders.append(Person(0, 0, batch=self.batch))
+					self.bystanders_icons.append(Person(0, 0, batch=self.batch))
 			elif add_count < 0:
 				for _ in range(-add_count):
-					bystander = self.bystanders.pop()
-					bystander.delete()
+					icon = self.bystanders_icons.pop()
+					icon.delete()
 
-			bystanders = zip(state.bystander_origins, bystander_dir_yaws)
-			bystanders = [(origin.distance(state.uav_origin), yaw) for origin, yaw in bystanders]
-			bystanders_near_to_far = sorted(bystanders, key=lambda b: b[0])
+			@dataclass
+			class Bystander:
+				index: int
+				yaw: float
+				distance: float
+
+			bystanders = [
+				Bystander(
+					i, bystander_dir_yaws[i], state.bystander_origins[i].distance(state.uav_origin)
+				)
+				for i in range(new_len)
+			]
+
+			bystanders_near_to_far = sorted(bystanders, key=lambda b: b.distance)
 
 			visible_bystander_yaws: list[float] = []
-			for i, (distance, yaw) in enumerate(bystanders_near_to_far):
-				bystander = self.bystanders[i]
-				if distance > MAX_DISTANCE:
-					bystander.visible = False
+			for bystander in bystanders_near_to_far:
+				yaw = bystander.yaw
+				distance = bystander.distance
+				icon = self.bystanders_icons[bystander.index]
+				if distance > MAX_DIST:
+					icon.visible = False
 					continue
 
 				adjusted_yaw = adjust_bystander_yaw(yaw, visible_bystander_yaws, radius=radians(6))
 				if adjusted_yaw is None:
-					bystander.visible = False
+					icon.visible = False
 					continue
 				visible_bystander_yaws.append(adjusted_yaw)
 
-				bystander.visible = True
-				bystander.x = round(canvas.yaw_to_x(adjusted_yaw))
-				bystander.y = round(max(0, map_range(distance, MIN_DISTANCE, MAX_DISTANCE, 0, 48)))
-				bystander.scale = round(
-					clamp(map_range(distance, MIN_DISTANCE, MAX_DISTANCE, 9, 2), 2, 9)
-				)
+				icon.visible = True
+				icon.x = round(canvas.yaw_to_x(adjusted_yaw))
+				icon.y = round(max(0, map_range(distance, MIN_DIST, MAX_DIST, 0, 48)))
+				icon.scale = round(clamp(map_range(distance, MIN_DIST, MAX_DIST, 9, 2), 2, 9))
 
 		state.subscribe("bystander_dir_yaws", on_change_bystander_dir_yaws, immediate=True)
 
@@ -96,22 +110,21 @@ class AwaitControl360(UIBase):
 			bystander_arms_angles: list[tuple[float, float, float, float]],
 		):
 			for i, angles in enumerate(bystander_arms_angles):
-				if i >= len(self.bystanders):  # meh
-					print("Warning: bystander_arms_angles has more elements than there are bystanders.")
-					return
-				bystander = self.bystanders[i]
-				bystander.set_arms_rotations(*angles)
+				icon = self.bystanders_icons[i]
+				icon.set_arms_rotations(*angles)
 
 		state.subscribe("bystander_arms_angles", on_change_bystander_arms_angles, immediate=True)
 
 		def on_change_bystander_selected_index(index: int):
-			if index < 0 or index >= len(self.bystanders):
-				for bystander in self.bystanders:
-					bystander.color = (255, 255, 255)
+			if index < 0 or index >= len(self.bystanders_icons):
+				for icon in self.bystanders_icons:
+					icon.color = (255, 255, 255)
 			else:
-				self.bystanders[index].color = Config.Colors.positive
+				self.bystanders_icons[index].color = Config.Colors.positive
 
-		state.subscribe("bystander_selected_index", on_change_bystander_selected_index, immediate=True)
+		state.subscribe(
+			"bystander_selected_index", on_change_bystander_selected_index, immediate=True
+		)
 
 	def render(self):
 		self.buf.bind()

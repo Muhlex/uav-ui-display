@@ -50,19 +50,6 @@ class Person:
 		self.body.x, self.body.y = self.legs[0].x2, self.legs[0].y2
 		self.body.x2, self.body.y2 = self.legs[0].x2, self.legs[0].y2 + int(scale * 2.4)
 
-		arm_origin_x = self.body.x2 - 1
-		arm_origin_y = self.body.y2 - int(scale * 0.6)
-		self.arms[0][0].x, self.arms[0][0].y = arm_origin_x, arm_origin_y
-		self.arms[0][0].x2, self.arms[0][0].y2 = arm_origin_x - int(scale * 0.8), arm_origin_y
-		self.arms[0][1].x, self.arms[0][1].y = self.arms[0][0].x2, self.arms[0][0].y2
-		self.arms[0][1].x2, self.arms[0][1].y2 = self.arms[0][0].x2 - scale, self.arms[0][0].y2
-
-		arm_origin_x = self.body.x2
-		self.arms[1][0].x, self.arms[1][0].y = arm_origin_x, arm_origin_y
-		self.arms[1][0].x2, self.arms[1][0].y2 = arm_origin_x + int(scale * 0.8), arm_origin_y
-		self.arms[1][1].x, self.arms[1][1].y = self.arms[1][0].x2, self.arms[1][0].y2
-		self.arms[1][1].x2, self.arms[1][1].y2 = self.arms[1][0].x2 + scale, self.arms[1][0].y2
-
 		self.head.radius = scale
 		self.head.x, self.head.y = self.body.x2, self.body.y2 + self.head.radius
 
@@ -156,34 +143,48 @@ class Person:
 		right_upper: float | None = None,
 		right_fore: float | None = None,
 	):
+		arms = self.arms
+
 		def rotate_segment(arm_index: int, segment_index: int, angle: float):
 			x2, y2 = rotate_around(
-				self.arms[arm_index][segment_index].x2,
-				self.arms[arm_index][segment_index].y2,
-				self.arms[arm_index][segment_index].x,
-				self.arms[arm_index][segment_index].y,
+				arms[arm_index][segment_index].x2,
+				arms[arm_index][segment_index].y2,
+				arms[arm_index][segment_index].x,
+				arms[arm_index][segment_index].y,
 				angle,
 			)
-			self.arms[arm_index][segment_index].x2 = x2
-			self.arms[arm_index][segment_index].y2 = y2
+			arms[arm_index][segment_index].x2 = x2
+			arms[arm_index][segment_index].y2 = y2
 			if segment_index == 0:
-				move_x = self.arms[arm_index][0].x2 - self.arms[arm_index][1].x
-				move_y = self.arms[arm_index][0].y2 - self.arms[arm_index][1].y
-				self.arms[arm_index][1].x += move_x
-				self.arms[arm_index][1].y += move_y
-				self.arms[arm_index][1].x2 += move_x
-				self.arms[arm_index][1].y2 += move_y
+				move_x = arms[arm_index][0].x2 - arms[arm_index][1].x
+				move_y = arms[arm_index][0].y2 - arms[arm_index][1].y
+				arms[arm_index][1].x += move_x
+				arms[arm_index][1].y += move_y
+				arms[arm_index][1].x2 += move_x
+				arms[arm_index][1].y2 += move_y
+
+		origin_y = self.body.y2 - int(self.scale * 0.6)
+		origin_x_l = self.body.x2 - 1
+		origin_x_r = self.body.x2
 
 		if left_upper is not None:
+			arms[0][0].x, arms[0][0].y = origin_x_l, origin_y
+			arms[0][0].x2, arms[0][0].y2 = origin_x_l - int(self.scale * 0.8), origin_y
 			rotate_segment(0, 0, left_upper)
 			self._arm_left_upper_angle = left_upper
 		if left_fore is not None:
+			arms[0][1].x, arms[0][1].y = arms[0][0].x2, arms[0][0].y2
+			arms[0][1].x2, arms[0][1].y2 = arms[0][0].x2 - self.scale, arms[0][0].y2
 			rotate_segment(0, 1, left_fore)
 			self._arm_left_fore_angle = left_fore
 		if right_upper is not None:
+			arms[1][0].x, arms[1][0].y = origin_x_r, origin_y
+			arms[1][0].x2, arms[1][0].y2 = origin_x_r + int(self.scale * 0.8), origin_y
 			rotate_segment(1, 0, right_upper)
 			self._arm_right_upper_angle = right_upper
 		if right_fore is not None:
+			arms[1][1].x, arms[1][1].y = arms[1][0].x2, arms[1][0].y2
+			arms[1][1].x2, arms[1][1].y2 = arms[1][0].x2 + self.scale, arms[1][0].y2
 			rotate_segment(1, 1, right_fore)
 			self._arm_right_fore_angle = right_fore
 

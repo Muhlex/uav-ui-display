@@ -31,7 +31,7 @@ class State(Observable):
 	operator_origin = Vec3(-100.0, 0.0, 0.0)
 	uav_origin = Vec3(100.0, 0.0, 0.0)
 	target_origin = Vec3(-200.0, 0.0, 200.0)
-	uav_state = UAVState.AWAIT_CONTROL
+	uav_state = UAVState.NONE
 	battery_frac = 0.75
 
 	operator_gesture_type = GestureType.NONE
