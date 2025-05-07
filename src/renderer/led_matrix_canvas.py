@@ -17,7 +17,7 @@ class LEDMatrixCanvas(DynamicTexture):
 
 		self.uis: list[UIBase] = [
 			HUD(matrix_width, matrix_height),
-			AwaitControl360(self, matrix_height - 32),
+			AwaitControl360(self, matrix_height),
 		]
 
 	def yaw_to_x(self, yaw: float):

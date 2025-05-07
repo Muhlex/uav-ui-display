@@ -2,7 +2,7 @@ from math import radians
 
 import pyglet as pg
 
-from util import rotate_around
+from util import rotate_around, map_range, ease_in_cubic
 
 
 class Person:
@@ -11,17 +11,19 @@ class Person:
 		x: int,
 		y: int,
 		scale: int = 5,
-		batch: pg.graphics.Batch | None = None,
 	):
 		"""
 		Origin is at the center of the person's feet.
+		This class doesn't render to an existing batch because it needs to sometimes overlay everything.
 		"""
 		self._arm_left_upper_angle = radians(45)
 		self._arm_right_upper_angle = radians(-45)
 		self._arm_left_fore_angle = radians(90)
 		self._arm_right_fore_angle = radians(-90)
 
-		self.batch = batch or pg.graphics.Batch()
+		self.batch = pg.graphics.Batch()
+
+		self.circle = pg.shapes.Circle(0, 0, 0, 32, batch=self.batch)
 
 		self.legs = (
 			pg.shapes.Line(0, 0, 0, 0, batch=self.batch),
@@ -41,6 +43,8 @@ class Person:
 		self._update_vertices(x, y, scale)
 
 	def _update_vertices(self, x: int, y: int, scale: int):
+		self.circle.position = (x, y + int(scale * 2.8))
+
 		self.legs[0].x, self.legs[0].y = x - int(scale * 0.8), y
 		self.legs[0].x2, self.legs[0].y2 = x, y + int(scale * 1.8)
 
@@ -128,6 +132,7 @@ class Person:
 
 	@color.setter
 	def color(self, value: tuple[int, int, int]):
+		self.circle.color = value
 		self.head.color = value
 		self.body.color = value
 		for leg in self.legs:
@@ -135,6 +140,9 @@ class Person:
 		for arm in self.arms:
 			for segment in arm:
 				segment.color = value
+
+	def set_gesture_progress(self, value: float):
+		self.circle.radius = map_range(ease_in_cubic(value), 0.0, 1.0, 0, 128)
 
 	def set_arms_rotations(
 		self,

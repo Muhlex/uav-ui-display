@@ -202,6 +202,7 @@ Operator gesture progress: {state.operator_gesture_progress:.2f}
 
 Bystander count: {len(state.bystander_origins)}
 Yaws towards bystanders: {[round(degrees(yaw), 2) for yaw in state.bystander_dir_yaws]}
+Selected bystander: {state.bystander_selected_index}
 
 Battery level: {state.battery_frac:.2f}
 """
@@ -218,6 +219,10 @@ Battery level: {state.battery_frac:.2f}
 				state.has_operator = not state.has_operator
 			case pg.window.key.T:
 				state.has_target = not state.has_target
+			case pg.window.key.I:
+				bystander_count = len(state.bystander_origins)
+				current = state.bystander_selected_index
+				state.bystander_selected_index = (current + 2) % (bystander_count + 1) - 1
 			case pg.window.key.B:
 				new_battery_frac = state.battery_frac - 0.1
 				if new_battery_frac <= 0.0:

@@ -62,8 +62,8 @@ class AwaitControl360(UIBase):
 			new_len = len(bystander_dir_yaws)
 			add_count = new_len - len(self.bystanders_icons)
 			if add_count > 0:
-				for _ in range(add_count):
-					self.bystanders_icons.append(Person(0, 0, batch=self.batch))
+				for i in range(add_count):
+					self.bystanders_icons.append(Person(i, 0, 0))
 			elif add_count < 0:
 				for _ in range(-add_count):
 					icon = self.bystanders_icons.pop()
@@ -116,18 +116,37 @@ class AwaitControl360(UIBase):
 		state.subscribe("bystander_arms_angles", on_change_bystander_arms_angles, immediate=True)
 
 		def on_change_bystander_selected_index(index: int):
-			if index < 0 or index >= len(self.bystanders_icons):
-				for icon in self.bystanders_icons:
-					icon.color = (255, 255, 255)
-			else:
+			for icon in self.bystanders_icons:
+				icon.color = (255, 255, 255)
+				icon.set_gesture_progress(0.0)
+			if index >= 0 and index < len(self.bystanders_icons):
 				self.bystanders_icons[index].color = Config.Colors.positive
+				self.bystanders_icons[index].set_gesture_progress(state.operator_gesture_progress)
 
 		state.subscribe(
 			"bystander_selected_index", on_change_bystander_selected_index, immediate=True
 		)
 
+		def on_change_operator_gesture_progress(frac: float):
+			index = state.bystander_selected_index
+			if index >= 0 and index < len(self.bystanders_icons):
+				self.bystanders_icons[index].set_gesture_progress(frac)
+
+		state.subscribe("operator_gesture_progress", on_change_operator_gesture_progress)
+
 	def render(self):
 		self.buf.bind()
+
 		gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 		self.batch.draw()
+
+		active_icon: Person | None = None
+		for i, icon in enumerate(self.bystanders_icons):
+			if state.bystander_selected_index == i:
+				active_icon = icon
+			else:
+				icon.draw()
+		if active_icon is not None:
+			active_icon.draw()
+
 		self.buf.unbind()
