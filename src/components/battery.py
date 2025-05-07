@@ -68,7 +68,7 @@ class BatterySmall(BatteryBase):
 	def __init__(self, x: int, y: int, batch: pg.graphics.Batch | None = None):
 		super().__init__(
 			outline_small,
-			Insets(2, 3, 2, 2),
+			Insets(3, 4, 3, 3),
 			x,
 			y,
 			batch=batch,

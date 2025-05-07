@@ -37,7 +37,7 @@ class HUDSelectTarget(HUDBase):
 
 		# self.bg = pg.shapes.Box(0, 0, self.width, self.height, batch=self.batch)
 
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 0, batch=self.batch)
 
 		icon_operator = Gesture(
 			0,

@@ -17,7 +17,7 @@ class HUDMoveToTarget(HUDBase):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
 
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 0, batch=self.batch)
 
 		self.icon_gesture = GestureLarge(
 			width // 2 - 24,

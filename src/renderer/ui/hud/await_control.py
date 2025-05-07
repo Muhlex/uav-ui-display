@@ -15,7 +15,7 @@ class HUDAwaitControl(HUDBase):
 
 		self.batch = pg.graphics.Batch()
 
-		# self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
+		# self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 0, batch=self.batch)
 
 		self.icon_wave = pg.sprite.Sprite(
 			wave,

@@ -16,7 +16,7 @@ class HUDAwaitCommand(HUDBase):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()
 
-		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 2, batch=self.batch)
+		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 0, batch=self.batch)
 
 		self.gesture_point = Gesture(
 			width // 2 - 22,
