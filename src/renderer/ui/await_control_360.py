@@ -20,8 +20,8 @@ MAX_DIST = 1_500
 
 
 class AwaitControl360(UIBase):
-	def __init__(self, canvas: LEDMatrixCanvas, height: int):
-		super().__init__(canvas.width, height)
+	def __init__(self, canvas: LEDMatrixCanvas):
+		super().__init__(canvas.width, canvas.height)
 		self.y_frac = 0.0
 
 		self.batch = pg.graphics.Batch()

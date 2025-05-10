@@ -16,8 +16,8 @@ class LEDMatrixCanvas(DynamicTexture):
 		self.overdraw_horz = overdraw_horz
 
 		self.uis: list[UIBase] = [
-			HUD(matrix_width, matrix_height),
-			AwaitControl360(self, matrix_height),
+			HUD(self),
+			AwaitControl360(self),
 		]
 
 	def yaw_to_x(self, yaw: float):

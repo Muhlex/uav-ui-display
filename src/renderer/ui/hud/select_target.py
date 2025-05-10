@@ -30,12 +30,12 @@ class LandmarkType(Enum):
 
 
 class HUDSelectTarget(HUDBase):
-	def __init__(self, width: int, height: int):
+	def __init__(self, width: int, height: int, safe_width: int):
 		super().__init__(width, height)
+		self.safe_width = safe_width
+
 		self.batch_bg = pg.graphics.Batch()
 		self.batch = pg.graphics.Batch()
-
-		# self.bg = pg.shapes.Box(0, 0, self.width, self.height, batch=self.batch)
 
 		self.battery = BatterySmall(width // 2 - BatterySmall.width // 2, 0, batch=self.batch)
 
@@ -110,7 +110,7 @@ class HUDSelectTarget(HUDBase):
 	def update(self):
 		max_scale = 0.06
 		padding = [
-			self.icons[LandmarkType.OPERATOR].radius + 10,
+			self.icons[LandmarkType.OPERATOR].radius + 4,
 			self.icons[LandmarkType.OPERATOR].radius + 8,
 		]
 
@@ -143,7 +143,7 @@ class HUDSelectTarget(HUDBase):
 		center = pg.math.Vec2((min_x + max_x) / 2, (min_y + max_y) / 2)
 		delta = pg.math.Vec2(max_x - min_x, max_y - min_y)
 
-		scale_x = (self.width - padding[0] * 2) / delta.x if delta.x != 0 else float("inf")
+		scale_x = (self.safe_width - padding[0] * 2) / delta.x if delta.x != 0 else float("inf")
 		scale_y = (self.height - padding[1] * 2) / delta.y if delta.y != 0 else float("inf")
 		scale = min(scale_x, scale_y, max_scale)
 		if scale == float("inf"):

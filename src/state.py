@@ -27,8 +27,8 @@ class GestureType(Enum):
 class State(Observable):
 	# external inputs:
 	uav_state = UAVState.NONE
-	operator_origin = Vec3(-100.0, 0.0, 0.0)
-	uav_origin = Vec3(100.0, 0.0, 0.0)
+	operator_origin = Vec3(100.0, 0.0, 0.0)
+	uav_origin = Vec3(-100.0, 0.0, 0.0)
 	target_origin = Vec3(-200.0, 0.0, 200.0)
 	battery_frac = 0.75
 
