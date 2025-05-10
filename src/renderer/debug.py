@@ -207,21 +207,27 @@ Battery level: {state.battery_frac:.2f}
 """
 
 	def on_key_press(self, symbol: int, modifiers: int):
+		sign = -1 if modifiers & pg.window.key.MOD_SHIFT else 1 # shift to cycle backwards
 		match symbol:
 			case pg.window.key.S:
-				state.uav_state = UAVState((state.uav_state.value + 1) % len(UAVState))
+				state.uav_state = UAVState((state.uav_state.value + sign) % len(UAVState))
 			case pg.window.key.G:
 				state.operator_gesture_type = GestureType(
-					(state.operator_gesture_type.value + 1) % len(GestureType)
+					(state.operator_gesture_type.value + sign) % len(GestureType)
 				)
 			case pg.window.key.O:
 				state.has_operator = not state.has_operator
 			case pg.window.key.I:
 				bystander_count = len(state.bystander_origins)
-				current = state.bystander_selected_index
-				state.bystander_selected_index = (current + 2) % (bystander_count + 1) - 1
+				i_current = state.bystander_selected_index
+				i_new = (i_current + sign) % (bystander_count + 1)
+				if i_new == bystander_count:
+					i_new = -1
+				state.bystander_selected_index = i_new
 			case pg.window.key.B:
-				new_battery_frac = state.battery_frac - 0.1
+				new_battery_frac = state.battery_frac - 0.1 * sign
 				if new_battery_frac <= 0.0:
 					new_battery_frac = 1.0
+				if new_battery_frac >= 1.0:
+					new_battery_frac = 0.0
 				state.battery_frac = new_battery_frac
