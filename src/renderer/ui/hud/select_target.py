@@ -83,9 +83,10 @@ class HUDSelectTarget(HUDBase):
 		pg.clock.schedule_interval(on_cycle_operator_gesture_type, 1.5)
 
 		def on_change_operator_gesture_type(value: GestureType):
-			if value != GestureType.CONFIRM and value != GestureType.ABORT:
-				return
-			cycle_gesture(value)
+			if value in { GestureType.CONFIRM, GestureType.ABORT, GestureType.POINT }:
+				cycle_gesture(value)
+			else:
+				cycle_gesture()
 
 		state.subscribe("operator_gesture_type", on_change_operator_gesture_type)
 

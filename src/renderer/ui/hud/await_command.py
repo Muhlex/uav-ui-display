@@ -20,14 +20,14 @@ class HUDAwaitCommand(HUDBase):
 
 		self.gesture_point = Gesture(
 			width // 2 - 22,
-			height - 24,
+			height - 32,
 			GestureType.POINT,
 			Config.Colors.white,
 		)
 		self.icon_point = pg.sprite.Sprite(
 			img_icon_dropoff,
 			self.gesture_point.x - img_icon_dropoff.width // 2,
-			self.gesture_point.y - int(self.gesture_point.radius) - img_icon_dropoff.height - 4,
+			self.gesture_point.y - int(self.gesture_point.radius) - img_icon_dropoff.height - 6,
 			batch=self.batch,
 		)
 
@@ -40,7 +40,7 @@ class HUDAwaitCommand(HUDBase):
 		self.icon_abort = pg.sprite.Sprite(
 			img_icon_abort,
 			self.gesture_abort.x - img_icon_dropoff.width // 2,
-			self.gesture_abort.y - int(self.gesture_abort.radius) - img_icon_dropoff.height - 4,
+			self.gesture_abort.y - int(self.gesture_abort.radius) - img_icon_dropoff.height - 6,
 			batch=self.batch,
 		)
 		self.icon_abort.color = Config.Colors.negative

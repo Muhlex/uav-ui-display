@@ -82,7 +82,7 @@ class BatteryLarge(BatteryBase):
 	def __init__(self, x: int, y: int, batch: pg.graphics.Batch | None = None):
 		super().__init__(
 			outline_large,
-			Insets(3, 5, 3, 3),
+			Insets(3, 6, 3, 3),
 			x,
 			y,
 			batch=batch,
