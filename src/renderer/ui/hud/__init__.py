@@ -18,6 +18,7 @@ from .await_command import HUDAwaitCommand
 from .select_target import HUDSelectTarget
 from .move_to_target import HUDMoveToTarget
 from .hover_target import HUDHoverTarget
+from .success import HUDSuccess
 
 
 class HUD(UIBase):
@@ -37,6 +38,7 @@ class HUD(UIBase):
 			UAVState.SELECT_TARGET: HUDSelectTarget(canvas.matrix_width, canvas.height, safe_width),
 			UAVState.MOVE_TO_TARGET: HUDMoveToTarget(canvas.matrix_width, canvas.height),
 			UAVState.HOVER_TARGET: HUDHoverTarget(canvas.matrix_width, canvas.height),
+			UAVState.SUCCESS: HUDSuccess(safe_width, canvas.height),
 		}
 		self.active_hud = huds[UAVState.NONE]
 
@@ -56,7 +58,7 @@ class HUD(UIBase):
 			gap = (canvas.matrix_width - tile_count * hud_width) // tile_count
 
 			for i in range(tile_count):
-				i_zeroed = i - (tile_count - 1) / 2 # e. g. [-0.5, 0.5] or [-1.0, 0.0, 1.0]
+				i_zeroed = i - (tile_count - 1) / 2  # e. g. [-0.5, 0.5] or [-1.0, 0.0, 1.0]
 				x = canvas.width // 2 - hud_width // 2 - gap // 2 + i_zeroed * hud_width + (gap * i)
 				self.sprites.append(
 					pg.sprite.Sprite(self.active_hud.texture, x, 0, batch=self.batch)

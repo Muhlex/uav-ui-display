@@ -14,6 +14,7 @@ class UAVState(Enum):
 	SELECT_TARGET = 5
 	MOVE_TO_TARGET = 6
 	HOVER_TARGET = 7
+	SUCCESS = 8
 
 
 class GestureType(Enum):
@@ -75,9 +76,10 @@ class State(Observable):
 	def _update_has_operator(self, _):
 		self.has_operator = self.uav_state not in {
 			UAVState.NONE,
+			UAVState.LOW_POWER,
 			UAVState.SEARCH,
 			UAVState.AWAIT_CONTROL,
-			UAVState.LOW_POWER,
+			UAVState.SUCCESS,
 		}
 
 	def _update_operator_dir_yaw(self, _):
