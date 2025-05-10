@@ -11,7 +11,6 @@ from .base import HUDBase
 from .none import HUDNone
 from .low_power import HUDLowPower
 from .search import HUDSearch
-from .approach import HUDApproach
 from .await_control import HUDAwaitControl
 from .await_command import HUDAwaitCommand
 from .cancel_command import HUDCancelCommand
@@ -26,12 +25,12 @@ class HUD(UIBase):
 
 		gap = 2
 		tile_count = 3
+		# TODO: Make huds full width so they can grow if they need to for specific animations?
 		hud_width = width // tile_count - gap
 		huds: dict[UAVState, HUDBase] = {
 			UAVState.NONE: HUDNone(hud_width, height),
 			UAVState.LOW_POWER: HUDLowPower(hud_width, height),
 			UAVState.SEARCH: HUDSearch(hud_width, height),
-			UAVState.APPROACH: HUDApproach(hud_width, height),
 			UAVState.AWAIT_CONTROL: HUDAwaitControl(hud_width, height),
 			UAVState.AWAIT_COMMAND: HUDAwaitCommand(hud_width, height),
 			UAVState.CANCEL_COMMAND: HUDCancelCommand(hud_width, height),

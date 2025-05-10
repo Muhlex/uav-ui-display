@@ -43,8 +43,6 @@ class Person:
 		self._update_vertices(x, y, scale)
 
 	def _update_vertices(self, x: int, y: int, scale: int):
-		self.circle.position = (x, y + int(scale * 2.8))
-
 		self.legs[0].x, self.legs[0].y = x - int(scale * 0.8), y
 		self.legs[0].x2, self.legs[0].y2 = x, y + int(scale * 1.8)
 
@@ -56,6 +54,9 @@ class Person:
 
 		self.head.radius = scale
 		self.head.x, self.head.y = self.body.x2, self.body.y2 + self.head.radius
+
+		# self.circle.position = (x, y + int(scale * 2.8))
+		self.circle.position = self.head.position
 
 		self.set_arms_rotations(
 			left_upper=self._arm_left_upper_angle,

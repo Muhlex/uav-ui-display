@@ -189,7 +189,6 @@ class Debug:
 		self.layout.document.text = f"""\
 UAV state: {state.uav_state}
 Has operator? {state.has_operator}
-Has target? {state.has_target}
 
 Operator origin: {state.operator_origin}
 UAV origin: {state.uav_origin}
@@ -217,8 +216,6 @@ Battery level: {state.battery_frac:.2f}
 				)
 			case pg.window.key.O:
 				state.has_operator = not state.has_operator
-			case pg.window.key.T:
-				state.has_target = not state.has_target
 			case pg.window.key.I:
 				bystander_count = len(state.bystander_origins)
 				current = state.bystander_selected_index
