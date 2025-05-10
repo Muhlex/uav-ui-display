@@ -11,9 +11,9 @@ class UAVState(Enum):
 	SEARCH = 2
 	AWAIT_CONTROL = 3
 	AWAIT_COMMAND = 4
-	CANCEL_COMMAND = 5
-	SELECT_TARGET = 6
-	MOVE_TO_TARGET = 7
+	SELECT_TARGET = 5
+	MOVE_TO_TARGET = 6
+	HOVER_TARGET = 7
 
 
 class GestureType(Enum):
@@ -73,12 +73,12 @@ class State(Observable):
 		self.subscribe("uav_origin", self._update_bystander_dir_yaws, immediate=True)
 
 	def _update_has_operator(self, _):
-		self.has_operator = self.uav_state not in (
+		self.has_operator = self.uav_state not in {
 			UAVState.NONE,
 			UAVState.SEARCH,
 			UAVState.AWAIT_CONTROL,
 			UAVState.LOW_POWER,
-		)
+		}
 
 	def _update_operator_dir_yaw(self, _):
 		dir = (self.operator_origin - self.uav_origin).normalize()

@@ -13,9 +13,9 @@ from .low_power import HUDLowPower
 from .search import HUDSearch
 from .await_control import HUDAwaitControl
 from .await_command import HUDAwaitCommand
-from .cancel_command import HUDCancelCommand
 from .select_target import HUDSelectTarget
 from .move_to_target import HUDMoveToTarget
+from .hover_target import HUDHoverTarget
 
 
 class HUD(UIBase):
@@ -33,9 +33,9 @@ class HUD(UIBase):
 			UAVState.SEARCH: HUDSearch(hud_width, height),
 			UAVState.AWAIT_CONTROL: HUDAwaitControl(hud_width, height),
 			UAVState.AWAIT_COMMAND: HUDAwaitCommand(hud_width, height),
-			UAVState.CANCEL_COMMAND: HUDCancelCommand(hud_width, height),
 			UAVState.SELECT_TARGET: HUDSelectTarget(hud_width, height),
 			UAVState.MOVE_TO_TARGET: HUDMoveToTarget(hud_width, height),
+			UAVState.HOVER_TARGET: HUDHoverTarget(hud_width, height),
 		}
 		self.active_hud = huds[UAVState.NONE]
 
