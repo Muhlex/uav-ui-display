@@ -42,8 +42,8 @@ class State(Observable):
 		Vec3(800.0, 0.0, -1000.0),
 		Vec3(810.0, 0.0, -1010.0),
 	]
-	# left_shoulder, left_elbow, right_shoulder, right_elbow:
-	# (all relative to operator, not one another)
+	# left_upper, left_lower, right_upper, right_lower:
+	# (as seen from the UAV, 0 means pointing right, rotating counterclockwise)
 	bystander_arms_angles: list[tuple[float, float, float, float]] = []
 	bystander_selected_index: int = -1
 

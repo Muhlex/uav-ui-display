@@ -118,10 +118,13 @@ class AwaitControl360(UIBase):
 		def on_change_bystander_selected_index(index: int):
 			for icon in self.bystanders_icons:
 				icon.color = (255, 255, 255)
+				icon.set_gesture_progress_visible(False)
 				icon.set_gesture_progress(0.0)
 			if index >= 0 and index < len(self.bystanders_icons):
-				self.bystanders_icons[index].color = Config.Colors.positive
-				self.bystanders_icons[index].set_gesture_progress(state.operator_gesture_progress)
+				icon = self.bystanders_icons[index]
+				icon.color = Config.Colors.positive
+				icon.set_gesture_progress_visible(True)
+				icon.set_gesture_progress(state.operator_gesture_progress)
 
 		state.subscribe(
 			"bystander_selected_index", on_change_bystander_selected_index, immediate=True

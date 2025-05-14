@@ -48,12 +48,12 @@ class UEReceiver:
 			value = convert_vec3(*values)
 		elif name == "bystanders" and len(values) % 7 == 0:
 			origins = []
-			arms_angles = []
+			angles = []
 			for i in range(0, len(values), 7):
 				origins.append(convert_vec3(*values[i : i + 3]))
-				arms_angles.append([radians(angle) for angle in values[i + 3 : i + 7]])
+				angles.append([radians((360 - angle) % 360) for angle in values[i + 3 : i + 7]])
 			setattr(state, "bystander_origins", origins)
-			setattr(state, "bystander_arms_angles", arms_angles)
+			setattr(state, "bystander_arms_angles", angles)
 			return
 		elif name == "obstacles" and len(values) % (3 * 2) == 0:
 			value = []
