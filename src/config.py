@@ -15,7 +15,7 @@ class Config:
 		display_size = 12
 	class Colors:
 		white = (255, 255, 255)
-		positive = (75, 255, 75)
+		positive = (75, 255, 225)
 		negative = (255, 75, 75)
+		warn = (255, 180, 50)
 		search = (25, 75, 255)
-		active = (255, 220, 50)

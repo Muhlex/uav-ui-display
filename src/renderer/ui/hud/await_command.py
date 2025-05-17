@@ -8,7 +8,7 @@ from components.battery import BatterySmall
 from components.gesture import Gesture, GestureType
 
 img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff.png")
-img_icon_abort = pg.resource.image("assets/images/icon/abort.png")
+img_icon_abort = pg.resource.image("assets/images/icon/back.png")
 
 
 class HUDAwaitCommand(HUDBase):
@@ -35,7 +35,7 @@ class HUDAwaitCommand(HUDBase):
 			width // 2 + 22,
 			self.gesture_point.y,
 			GestureType.ABORT,
-			Config.Colors.negative,
+			Config.Colors.warn,
 		)
 		self.icon_abort = pg.sprite.Sprite(
 			img_icon_abort,
@@ -43,7 +43,7 @@ class HUDAwaitCommand(HUDBase):
 			self.gesture_abort.y - int(self.gesture_abort.radius) - img_icon_dropoff.height - 6,
 			batch=self.batch,
 		)
-		self.icon_abort.color = Config.Colors.negative
+		self.icon_abort.color = Config.Colors.warn
 
 		self.gestures = [self.gesture_point, self.gesture_abort]
 

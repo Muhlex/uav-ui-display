@@ -7,7 +7,7 @@ from .base import HUDBase
 from components.battery import BatterySmall
 from components.gesture import GestureLarge, GestureType
 
-img_icon_abort = pg.resource.image("assets/images/icon/abort_large.png")
+img_icon_abort = pg.resource.image("assets/images/icon/back_large.png")
 
 
 class HUDMoveToTarget(HUDBase):
@@ -21,7 +21,7 @@ class HUDMoveToTarget(HUDBase):
 			width // 2 - 24,
 			height // 2 + 4,
 			GestureType.ABORT,
-			Config.Colors.negative,
+			Config.Colors.warn,
 		)
 		self.icon_action = pg.sprite.Sprite(
 			img_icon_abort,
@@ -29,7 +29,7 @@ class HUDMoveToTarget(HUDBase):
 			self.icon_gesture.y - img_icon_abort.height // 2,
 			batch=self.batch,
 		)
-		self.icon_action.color = Config.Colors.negative
+		self.icon_action.color = Config.Colors.warn
 
 	def render(self):
 		self.buf.bind()

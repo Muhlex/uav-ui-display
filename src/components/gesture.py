@@ -6,13 +6,15 @@ from util import map_range, ease_in_cubic
 
 from state import state, GestureType
 
+from assets.images.gesture.person.point import point
+
 # Of course pyglet's primitives never render uneven diameter circles, so use images:
 img_outline = pg.resource.image("assets/images/gesture/outline.png")
 img_fill = pg.resource.image("assets/images/gesture/fill.png")
 icons = {
 	GestureType.ABORT: pg.resource.image("assets/images/gesture/person/abort.png"),
 	GestureType.CONFIRM: pg.resource.image("assets/images/gesture/person/confirm.png"),
-	GestureType.POINT: pg.resource.image("assets/images/gesture/person/point.png"),
+	GestureType.POINT: point,
 }
 
 img_outline_large = pg.resource.image("assets/images/gesture/outline_large.png")
@@ -27,6 +29,8 @@ for img in chain(
 	icons_large.values(),
 	[img_outline, img_fill, img_outline_large, img_fill_large],
 ):
+	if not isinstance(img, (pg.image.Texture, pg.image.TextureRegion)):
+		continue
 	img.anchor_x = img.width // 2
 	img.anchor_y = img.height // 2
 

@@ -9,7 +9,7 @@ from components.battery import BatterySmall
 from components.gesture import GestureLarge, GestureType
 
 img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff_large.png")
-img_icon_abort = pg.resource.image("assets/images/icon/abort_large.png")
+img_icon_abort = pg.resource.image("assets/images/icon/back_large.png")
 
 
 class HUDHoverTarget(HUDBase):
@@ -42,7 +42,7 @@ class HUDHoverTarget(HUDBase):
 				)
 
 			color = {
-				GestureType.ABORT: Config.Colors.negative,
+				GestureType.ABORT: Config.Colors.warn,
 				GestureType.CONFIRM: Config.Colors.positive,
 			}.get(gesture_type, Config.Colors.white)
 

@@ -38,7 +38,7 @@ class BatteryBase:
 			elif frac < 0.7:
 				self.fill.color = (255, 220, 0, self.fill.color[3])
 			else:
-				self.fill.color = (25, 255, 255, self.fill.color[3])
+				self.fill.color = (75, 255, 225, self.fill.color[3])
 
 		def blink(dt: float):
 			if state.battery_frac <= 0.2 and self.fill.color[3] == 255:

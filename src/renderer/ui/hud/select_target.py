@@ -64,7 +64,7 @@ class HUDSelectTarget(HUDBase):
 				)
 
 			color = {
-				GestureType.ABORT: Config.Colors.negative,
+				GestureType.ABORT: Config.Colors.warn,
 				GestureType.CONFIRM: Config.Colors.positive,
 			}.get(gesture_type, Config.Colors.white)
 
