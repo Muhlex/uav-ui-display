@@ -54,7 +54,6 @@ class State(Observable):
 
 	# computed:
 	has_operator = False
-	# TODO: Remove pitches if they stay unused
 	operator_dir_pitch = 0.0
 	operator_dir_yaw = 0.0
 	target_dir_pitch = 0.0
