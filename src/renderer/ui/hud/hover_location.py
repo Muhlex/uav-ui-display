@@ -12,7 +12,7 @@ img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff_large.png")
 img_icon_abort = pg.resource.image("assets/images/icon/back_large.png")
 
 
-class HUDHoverTarget(HUDBase):
+class HUDHoverLocation(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()

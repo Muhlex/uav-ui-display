@@ -13,11 +13,11 @@ from .base import HUDBase
 from .none import HUDNone
 from .low_power import HUDLowPower
 from .search import HUDSearch
-from .await_control import HUDAwaitControl
-from .await_command import HUDAwaitCommand
-from .select_target import HUDSelectTarget
-from .move_to_target import HUDMoveToTarget
-from .hover_target import HUDHoverTarget
+from .await_user import HUDAwaitUser
+from .select_mode import HUDSelectMode
+from .assert_location import HUDAssertLocation
+from .move_to_location import HUDMoveToLocation
+from .hover_location import HUDHoverLocation
 from .success import HUDSuccess
 
 
@@ -33,11 +33,11 @@ class HUD(UIBase):
 			UAVState.NONE: HUDNone(canvas.matrix_width, canvas.height),
 			UAVState.LOW_POWER: HUDLowPower(safe_width, canvas.height),
 			UAVState.SEARCH: HUDSearch(canvas.matrix_width // 4, canvas.height),
-			UAVState.AWAIT_CONTROL: HUDAwaitControl(safe_width, canvas.height),
-			UAVState.AWAIT_COMMAND: HUDAwaitCommand(canvas.matrix_width, canvas.height),
-			UAVState.SELECT_TARGET: HUDSelectTarget(canvas.matrix_width, canvas.height, safe_width),
-			UAVState.MOVE_TO_TARGET: HUDMoveToTarget(canvas.matrix_width, canvas.height),
-			UAVState.HOVER_TARGET: HUDHoverTarget(canvas.matrix_width, canvas.height),
+			UAVState.AWAIT_USER: HUDAwaitUser(safe_width, canvas.height),
+			UAVState.SELECT_MODE: HUDSelectMode(canvas.matrix_width, canvas.height),
+			UAVState.ASSERT_LOCATION: HUDAssertLocation(canvas.matrix_width, canvas.height, safe_width),
+			UAVState.MOVE_TO_LOCATION: HUDMoveToLocation(canvas.matrix_width, canvas.height),
+			UAVState.HOVER_LOCATION: HUDHoverLocation(canvas.matrix_width, canvas.height),
 			UAVState.SUCCESS: HUDSuccess(safe_width, canvas.height),
 		}
 		self.active_hud = huds[UAVState.NONE]

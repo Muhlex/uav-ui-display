@@ -19,7 +19,7 @@ MIN_DIST = 250
 MAX_DIST = 1_500
 
 
-class AwaitControl360(UIBase):
+class AwaitUser360(UIBase):
 	def __init__(self, canvas: LEDMatrixCanvas):
 		super().__init__(canvas.width, canvas.height)
 		self.y_frac = 0.0
@@ -27,7 +27,7 @@ class AwaitControl360(UIBase):
 		self.batch = pg.graphics.Batch()
 
 		def on_change_uav_state(uav_state: UAVState):
-			self.visible = uav_state == UAVState.AWAIT_CONTROL
+			self.visible = uav_state == UAVState.AWAIT_USER
 
 		state.subscribe("uav_state", on_change_uav_state, immediate=True)
 

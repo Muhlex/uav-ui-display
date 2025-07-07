@@ -9,7 +9,7 @@ from .ui.base import UIBase
 class LEDMatrixCanvas(DynamicTexture):
 	def __init__(self, matrix_width: int, matrix_height: int, overdraw_horz: int):
 		from .ui.hud import HUD
-		from .ui.await_control_360 import AwaitControl360
+		from .ui.await_user_360 import AwaitUser360
 
 		super().__init__(matrix_width + overdraw_horz * 2, matrix_height)
 		self.matrix_width = matrix_width
@@ -17,7 +17,7 @@ class LEDMatrixCanvas(DynamicTexture):
 
 		self.uis: list[UIBase] = [
 			HUD(self),
-			AwaitControl360(self),
+			AwaitUser360(self),
 		]
 
 	def yaw_to_x(self, yaw: float):

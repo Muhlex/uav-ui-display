@@ -11,7 +11,7 @@ img_icon_dropoff = pg.resource.image("assets/images/icon/dropoff.png")
 img_icon_abort = pg.resource.image("assets/images/icon/back.png")
 
 
-class HUDAwaitCommand(HUDBase):
+class HUDSelectMode(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()

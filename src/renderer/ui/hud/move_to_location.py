@@ -10,7 +10,7 @@ from components.gesture import GestureLarge, GestureType
 img_icon_abort = pg.resource.image("assets/images/icon/back_large.png")
 
 
-class HUDMoveToTarget(HUDBase):
+class HUDMoveToLocation(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.batch = pg.graphics.Batch()

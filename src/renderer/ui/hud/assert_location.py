@@ -29,7 +29,7 @@ class LandmarkType(Enum):
 	TARGET = 2
 
 
-class HUDSelectTarget(HUDBase):
+class HUDAssertLocation(HUDBase):
 	def __init__(self, width: int, height: int, safe_width: int):
 		super().__init__(width, height)
 		self.safe_width = safe_width

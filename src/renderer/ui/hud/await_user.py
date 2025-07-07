@@ -8,7 +8,7 @@ from assets.images.icon.wave import wave
 # from components.battery import BatterySmall
 
 
-class HUDAwaitControl(HUDBase):
+class HUDAwaitUser(HUDBase):
 	def __init__(self, width: int, height: int):
 		super().__init__(width, height)
 		self.yawspeed = -0.2
